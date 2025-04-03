@@ -39,7 +39,10 @@
         }
         const text = await response.text();
         // Разделяем строки и убираем заголовок (первая строка)
-        const words = text.split('\n').slice(1).map(row => row.split(',')[0]).filter(word => word); // Берем первый столбец, убираем пустые строки
+        const words = text.split('\n').slice(1).map(row => {
+          const columns = row.split(',');
+          return columns[1] ? columns[1].trim() : ''; // Берем второй столбец (индекс 1), убираем пробелы
+        }).filter(word => word); // Убираем пустые строки
         if (words.length === 0) {
           console.warn('Нет слов в таблице');
           return;
