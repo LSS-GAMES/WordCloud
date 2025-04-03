@@ -28,14 +28,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
-    // Функция для получения данных из CSV через прокси
+    // Функция для получения данных из CSV
     async function fetchWords() {
-      const csvUrl = 'https://docs.google.com/spreadsheets/d/1hr9ZijIgkMPKR4RLPT4J4WznfQCLI2NPrNCT0bfPmog/pub?output=csv';
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Прокси для обхода CORS
-      const url = proxyUrl + csvUrl;
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
 
       try {
-        const response = await fetch(url);
+        const response = await fetch(csvUrl);
         if (!response.ok) {
           throw new Error('Не удалось загрузить CSV: ' + response.statusText);
         }
@@ -61,7 +59,6 @@
 
       const wordArray = Object.entries(wordCounts).map(([word, count]) => [word, count]);
 
-      // Очищаем содержимое элемента перед генерацией
       const wordcloudElement = document.getElementById('wordcloud');
       wordcloudElement.innerHTML = '';
 
