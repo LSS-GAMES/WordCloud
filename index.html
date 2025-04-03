@@ -5,55 +5,53 @@
   <style>
     body {
       margin: 0;
-      padding: 20px;
+      padding: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Цвета из предыдущего кода */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      overflow: auto;
       position: relative;
     }
     .container {
       text-align: center;
       width: 100%;
-      max-width: 1200px;
+      max-width: 1000px; /* Ограничиваем максимальную ширину */
+      padding: 20px;
+      box-sizing: border-box;
     }
     h2 {
-      color: #fff;
-      font-size: 2.8em;
+      color: #333;
+      font-size: 2.5em;
       margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
       animation: fadeIn 1s ease-in-out;
     }
     .form-link {
       margin-bottom: 20px;
     }
     .form-link a {
-      color: #ffd700;
+      color: #1a73e8;
       text-decoration: none;
       font-weight: bold;
       font-size: 1.2em;
-      transition: color 0.3s ease, transform 0.3s ease;
+      transition: color 0.3s ease;
     }
     .form-link a:hover {
-      color: #ffeb3b;
-      transform: scale(1.05);
+      color: #0d47a1;
+      text-decoration: underline;
     }
     #wordcloud {
-      width: 80vw; /* 80% ширины экрана */
-      height: 80vh; /* 80% высоты экрана */
+      width: 100%; /* Полная ширина контейнера */
+      height: 60vh; /* Уменьшаем высоту, чтобы не перекрывать ссылку */
+      max-height: 600px; /* Ограничиваем максимальную высоту */
       border: none;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      transition: transform 0.5s ease;
-    }
-    #wordcloud:hover {
-      transform: scale(1.03);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.9);
     }
     canvas {
       transition: opacity 1s ease;
@@ -124,7 +122,7 @@
 
     // Функция для генерации случайного цвета
     function getRandomColor() {
-      const colors = ['#FFD700', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1', '#B565A7'];
+      const colors = ['#FFD700', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1', '#B565A7']; // Цвета из предыдущего кода
       return colors[Math.floor(Math.random() * colors.length)];
     }
 
@@ -142,14 +140,14 @@
 
       WordCloud(wordcloudElement, {
         list: wordArray,
-        gridSize: 12,
-        weightFactor: 40,
+        gridSize: 10,
+        weightFactor: 30,
         fontFamily: 'Poppins, sans-serif',
         color: function () {
           return getRandomColor(); // Случайный цвет для каждого слова
         },
-        rotateRatio: 0.8, // Увеличиваем вероятность поворота слов
-        rotationSteps: 4, // Больше углов поворота
+        rotateRatio: 0.7,
+        rotationSteps: 3,
         backgroundColor: 'transparent',
         drawOutOfBound: false,
         shrinkToFit: true,
