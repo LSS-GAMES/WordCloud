@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Облако слов</title>
+  <style>
+    #wordcloud {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="wordcloud"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
+  <script>
+    // Функция для получения данных из CSV
+    async function fetchWords() {
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/1hr9ZijIgkMPKR4RLPT4J4WznfQCLI2NPrNCT0bfPmog/edit?usp=sharing'; // Замени на ссылку из "Publish to web"
+
+      try {
+        const response = await fetch(csvUrl);
+        const text = await response.text();
+        const words = text.split('\n').map(row => row.split(',')[0]).filter(word => word); // Берем первый столбец, убираем пустые строки
+        generateWordCloud(words);
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+      }
+    }
+
+    // Функция для генерации облака слов
+    function generateWordCloud(words) {
+      const wordCounts = words.reduce((acc, word) => {
+        acc[word] = (acc[word] || 0) + 1;
+        return acc;
+      }, {});
+
+      const wordArray = Object.entries(wordCounts).map(([word, count]) => [word, count]);
+
+      WordCloud(document.getElementById('wordcloud'), {
+        list: wordArray,
+        gridSize: 8,
+        weightFactor: 20,
+        fontFamily: 'Arial, sans-serif',
+        color: 'random-dark',
+        rotateRatio: 0.5, // Вероятность поворота слов
+        rotationSteps: 2, // Возможные углы поворота (0 или 90 градусов)
+        backgroundColor: '#fff'
+      });
+    }
+
+    // Загружаем данные при загрузке страницы
+    fetchWords();
+
+    // Обновляем данные каждые 10 секунд
+    setInterval(fetchWords, 10000);
+  </script>
+</body>
+</html>
