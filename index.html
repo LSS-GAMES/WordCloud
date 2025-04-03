@@ -7,19 +7,19 @@
       margin: 0;
       padding: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Цвета из предыдущего кода */
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* Перемещаем содержимое вверх */
       overflow: auto;
       position: relative;
     }
     .container {
       text-align: center;
       width: 100%;
-      max-width: 1000px; /* Ограничиваем максимальную ширину */
+      max-width: 1000px;
       padding: 20px;
       box-sizing: border-box;
     }
@@ -45,13 +45,15 @@
       text-decoration: underline;
     }
     #wordcloud {
-      width: 100%; /* Полная ширина контейнера */
-      height: 60vh; /* Уменьшаем высоту, чтобы не перекрывать ссылку */
-      max-height: 600px; /* Ограничиваем максимальную высоту */
+      width: 100%;
+      height: 70vh; /* Увеличиваем высоту */
+      max-height: 700px; /* Увеличиваем максимальную высоту */
       border: none;
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       background: rgba(255, 255, 255, 0.9);
+      opacity: 1;
+      transition: opacity 1s ease; /* Плавное изменение при обновлении */
     }
     canvas {
       transition: opacity 1s ease;
@@ -61,8 +63,8 @@
       position: fixed;
       bottom: 20px;
       left: 20px;
-      width: 100px;
-      height: 100px;
+      width: 150px; /* Увеличиваем размер */
+      height: 150px;
       background: #fff;
       padding: 10px;
       border-radius: 10px;
@@ -84,12 +86,12 @@
   <div class="container">
     <div class="form-link">
       <h2>Облако слов</h2>
-      <p>Перейдите по <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=dialog" target="_blank">этой ссылке</a>, чтобы добавить слово в облако.</p>
+      <p>Перейдите по <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform" target="_blank">этой ссылке</a>, чтобы добавить слово в облако.</p>
     </div>
     <div id="wordcloud"></div>
   </div>
   <div class="qr-code">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=dialog" alt="QR Code" />
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform" alt="QR Code" />
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
@@ -122,7 +124,7 @@
 
     // Функция для генерации случайного цвета
     function getRandomColor() {
-      const colors = ['#FFD700', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1', '#B565A7']; // Цвета из предыдущего кода
+      const colors = ['#FFD700', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1', '#B565A7'];
       return colors[Math.floor(Math.random() * colors.length)];
     }
 
@@ -136,62 +138,74 @@
       const wordArray = Object.entries(wordCounts).map(([word, count]) => [word, count]);
 
       const wordcloudElement = document.getElementById('wordcloud');
-      wordcloudElement.innerHTML = '';
 
-      WordCloud(wordcloudElement, {
-        list: wordArray,
-        gridSize: 10,
-        weightFactor: 30,
-        fontFamily: 'Poppins, sans-serif',
-        color: function () {
-          return getRandomColor(); // Случайный цвет для каждого слова
-        },
-        rotateRatio: 0.7,
-        rotationSteps: 3,
-        backgroundColor: 'transparent',
-        drawOutOfBound: false,
-        shrinkToFit: true,
-        shuffle: false,
-        hover: function (item, dimension, event) {
-          if (dimension) {
-            event.target.style.cursor = 'pointer';
-            anime({
-              targets: event.target,
-              scale: 1.2,
-              duration: 300,
-              easing: 'easeOutQuad'
-            });
-          }
-        },
-        mouseout: function (item, dimension, event) {
-          if (dimension) {
-            anime({
-              targets: event.target,
-              scale: 1,
-              duration: 300,
-              easing: 'easeOutQuad'
-            });
-          }
-        },
-        click: function (item, dimension, event) {
-          if (item) {
-            anime({
-              targets: event.target,
-              scale: [1, 1.5, 1],
-              rotate: [0, 360],
-              duration: 1000,
-              easing: 'easeInOutQuad'
-            });
-          }
-        }
-      });
+      // Плавное затухание перед обновлением
+      anime({
+        targets: wordcloudElement,
+        opacity: 0,
+        duration: 500,
+        easing: 'easeOutQuad',
+        complete: () => {
+          wordcloudElement.innerHTML = ''; // Очищаем содержимое
 
-      // Анимация появления слов
-      const canvas = wordcloudElement.querySelector('canvas');
-      if (canvas) {
-        canvas.style.opacity = '0';
-        setTimeout(() => {
-          canvas.style.opacity = '1';
+          // Генерируем новое облако слов
+          WordCloud(wordcloudElement, {
+            list: wordArray,
+            gridSize: 10,
+            weightFactor: 30,
+            fontFamily: 'Poppins, sans-serif',
+            color: function () {
+              return getRandomColor();
+            },
+            rotateRatio: 0.7,
+            rotationSteps: 3,
+            backgroundColor: 'transparent',
+            drawOutOfBound: false,
+            shrinkToFit: true,
+            shuffle: false,
+            hover: function (item, dimension, event) {
+              if (dimension) {
+                event.target.style.cursor = 'pointer';
+                anime({
+                  targets: event.target,
+                  scale: 1.2,
+                  duration: 300,
+                  easing: 'easeOutQuad'
+                });
+              }
+            },
+            mouseout: function (item, dimension, event) {
+              if (dimension) {
+                anime({
+                  targets: event.target,
+                  scale: 1,
+                  duration: 300,
+                  easing: 'easeOutQuad'
+                });
+              }
+            },
+            click: function (item, dimension, event) {
+              if (item) {
+                anime({
+                  targets: event.target,
+                  scale: [1, 1.5, 1],
+                  rotate: [0, 360],
+                  duration: 1000,
+                  easing: 'easeInOutQuad'
+                });
+              }
+            }
+          });
+
+          // Плавное появление нового облака
+          anime({
+            targets: wordcloudElement,
+            opacity: 1,
+            duration: 500,
+            easing: 'easeInQuad'
+          });
+
+          // Анимация появления слов
           const spans = wordcloudElement.querySelectorAll('span');
           spans.forEach((span, index) => {
             anime({
@@ -203,8 +217,8 @@
               easing: 'easeOutExpo'
             });
           });
-        }, 100);
-      }
+        }
+      });
     }
 
     // Загружаем данные при загрузке страницы
