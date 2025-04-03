@@ -17,12 +17,20 @@
   <script>
     // Функция для получения данных из CSV
     async function fetchWords() {
-      const csvUrl = 'https://docs.google.com/spreadsheets/d/1hr9ZijIgkMPKR4RLPT4J4WznfQCLI2NPrNCT0bfPmog/edit?usp=sharing'; // Замени на ссылку из "Publish to web"
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/1hr9ZijIgkMPKR4RLPT4J4WznfQCLI2NPrNCT0bfPmog/pub?output=csv';
 
       try {
         const response = await fetch(csvUrl);
+        if (!response.ok) {
+          throw new Error('Не удалось загрузить CSV: ' + response.statusText);
+        }
         const text = await response.text();
-        const words = text.split('\n').map(row => row.split(',')[0]).filter(word => word); // Берем первый столбец, убираем пустые строки
+        // Разделяем строки и убираем заголовок (первая строка)
+        const words = text.split('\n').slice(1).map(row => row.split(',')[0]).filter(word => word); // Берем первый столбец, убираем пустые строки
+        if (words.length === 0) {
+          console.warn('Нет слов в таблице');
+          return;
+        }
         generateWordCloud(words);
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
