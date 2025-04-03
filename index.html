@@ -8,6 +8,10 @@
       height: 500px;
       border: 1px solid #ccc;
     }
+    body {
+      margin: 0;
+      padding: 0;
+    }
   </style>
 </head>
 <body>
@@ -39,6 +43,7 @@
 
     // Функция для генерации облака слов
     function generateWordCloud(words) {
+      // Преобразуем слова в формат, ожидаемый WordCloud.js
       const wordCounts = words.reduce((acc, word) => {
         acc[word] = (acc[word] || 0) + 1;
         return acc;
@@ -46,7 +51,12 @@
 
       const wordArray = Object.entries(wordCounts).map(([word, count]) => [word, count]);
 
-      WordCloud(document.getElementById('wordcloud'), {
+      // Очищаем содержимое элемента перед генерацией
+      const wordcloudElement = document.getElementById('wordcloud');
+      wordcloudElement.innerHTML = '';
+
+      // Генерируем облако слов
+      WordCloud(wordcloudElement, {
         list: wordArray,
         gridSize: 8,
         weightFactor: 20,
@@ -54,7 +64,8 @@
         color: 'random-dark',
         rotateRatio: 0.5, // Вероятность поворота слов
         rotationSteps: 2, // Возможные углы поворота (0 или 90 градусов)
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        shuffle: false // Отключаем случайное перемешивание
       });
     }
 
