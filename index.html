@@ -3,28 +3,39 @@
 <head>
   <title>Облако слов</title>
   <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
     #wordcloud {
       width: 100%;
       height: 500px;
       border: 1px solid #ccc;
+      margin-top: 20px;
     }
-    body {
-      margin: 0;
-      padding: 0;
+    .form-link {
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
+  <div class="form-link">
+    <h2>Введите слово</h2>
+    <p>Перейдите по <a href="ВАШ_URL_ФОРМЫ" target="_blank">этой ссылке</a>, чтобы добавить слово в облако.</p>
+  </div>
   <div id="wordcloud"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
-    // Функция для получения данных из CSV
+    // Функция для получения данных из CSV через прокси
     async function fetchWords() {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/1hr9ZijIgkMPKR4RLPT4J4WznfQCLI2NPrNCT0bfPmog/pub?output=csv';
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Прокси для обхода CORS
+      const url = proxyUrl + csvUrl;
 
       try {
-        const response = await fetch(csvUrl);
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Не удалось загрузить CSV: ' + response.statusText);
         }
@@ -43,7 +54,6 @@
 
     // Функция для генерации облака слов
     function generateWordCloud(words) {
-      // Преобразуем слова в формат, ожидаемый WordCloud.js
       const wordCounts = words.reduce((acc, word) => {
         acc[word] = (acc[word] || 0) + 1;
         return acc;
@@ -55,17 +65,16 @@
       const wordcloudElement = document.getElementById('wordcloud');
       wordcloudElement.innerHTML = '';
 
-      // Генерируем облако слов
       WordCloud(wordcloudElement, {
         list: wordArray,
         gridSize: 8,
         weightFactor: 20,
         fontFamily: 'Arial, sans-serif',
         color: 'random-dark',
-        rotateRatio: 0.5, // Вероятность поворота слов
-        rotationSteps: 2, // Возможные углы поворота (0 или 90 градусов)
+        rotateRatio: 0.5,
+        rotationSteps: 2,
         backgroundColor: '#fff',
-        shuffle: false // Отключаем случайное перемешивание
+        shuffle: false
       });
     }
 
