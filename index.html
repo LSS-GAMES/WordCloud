@@ -6,64 +6,62 @@
   <title>Регистрация — бронирование слотов</title>
   <style>
     :root {
-      --bg: #f6f7f9; --card:#fff; --txt:#0f172a; --muted:#6b7280; --border:#e5e7eb;
-      --accent:#2563eb; --accent-contrast:#fff; --ring: 0 0 0 3px rgba(37,99,235,.25);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      --bg:#f6f7f9; --card:#fff; --txt:#0f172a; --muted:#6b7280; --border:#e5e7eb;
+      --accent:#2563eb; --accent-contrast:#fff; --ring:0 0 0 3px rgba(37,99,235,.25);
+      font-family:system-ui,-apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
     }
-    html,body{height:100%;}
-    body { margin: 0; background: var(--bg); color: var(--txt); -webkit-text-size-adjust:100%; }
-    .wrap { max-width: 960px; margin: 24px auto 80px; padding: 0 16px; }
-    @supports(padding: max(0px)) { .wrap{ padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); } }
+    html,body{height:100%}
+    body{margin:0; background:var(--bg); color:var(--txt); -webkit-text-size-adjust:100%}
+    .wrap{max-width:960px; margin:24px auto 80px; padding:0 16px}
+    @supports(padding:max(0px)){.wrap{padding-left:max(16px,env(safe-area-inset-left)); padding-right:max(16px,env(safe-area-inset-right))}}
 
-    h1 { font-size: 24px; margin: 8px 0 16px; letter-spacing:.2px; }
-    .card { background: var(--card); border-radius: 14px; box-shadow: 0 6px 24px rgba(15,23,42,.06); padding: 20px; }
-    fieldset { border: none; padding: 0; margin: 0 0 18px; }
-    legend { font-weight: 700; margin: 0 0 10px; }
+    h1{font-size:24px; margin:8px 0 16px; letter-spacing:.2px}
+    .card{background:var(--card); border-radius:14px; box-shadow:0 6px 24px rgba(15,23,42,.06); padding:20px}
+    fieldset{border:none; padding:0; margin:0 0 18px}
+    legend{font-weight:700; margin:0 0 10px}
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 12px 16px; }
-    .row { display: grid; gap: 8px; }
-    .row label { font-size: 13px; color: #374151; }
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px 16px}
+    .row{display:grid; gap:8px}
+    .row label{font-size:13px; color:#374151}
 
-    input[type="text"], input[type="tel"], input[type="email"], input[type="date"] {
-      width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 12px; background: #fff; font-size: 15px;
+    input[type="text"], input[type="tel"], input[type="email"]{
+      width:100%; box-sizing:border-box; padding:12px 14px; border:1px solid #d1d5db; border-radius:12px; background:#fff; font-size:15px;
     }
-    input:focus{ outline: none; box-shadow: var(--ring); border-color: #93c5fd; }
+    input:focus{outline:none; box-shadow:var(--ring); border-color:#93c5fd}
 
     /* Чипы для дат/времени */
-    .chips { display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
-    label.option { display: inline-flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 999px; background: #fafafa; cursor: pointer; user-select: none; transition: background .15s, border-color .15s, transform .02s; }
-    label.option:active{ transform:scale(.98); }
-    label.option input { appearance: none; width:16px; height:16px; border-radius:50%; border:1.5px solid #9ca3af; display:inline-block; position:relative; }
-    label.option input:checked{ border-color: var(--accent); box-shadow: inset 0 0 0 4px var(--accent); }
-    label.option span{ font-weight:600; }
-    label.option.disabled { opacity: .45; filter: grayscale(100%); cursor: not-allowed; }
+    .chips{display:grid; grid-template-columns:repeat(auto-fit, minmax(110px,1fr)); gap:10px}
+    label.option{display:inline-flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:999px; background:#fafafa; cursor:pointer; user-select:none; transition:background .15s,border-color .15s, transform .02s}
+    label.option:active{transform:scale(.98)}
+    label.option input{appearance:none; width:16px; height:16px; border-radius:50%; border:1.5px solid #9ca3af; display:inline-block}
+    label.option input:checked{border-color:var(--accent); box-shadow:inset 0 0 0 4px var(--accent)}
+    label.option span{font-weight:600}
+    label.option.disabled{opacity:.45; filter:grayscale(100%); cursor:not-allowed}
 
-    .muted { color: var(--muted); font-size: 13px; margin-top:6px; }
+    .muted{color:var(--muted); font-size:13px; margin-top:6px}
 
-    /* Команда: по два поля в ряд на десктопе, в столбик на мобиле */
-    .members-grid { display:grid; grid-template-columns: 1fr 220px; gap:12px 16px; align-items:end; }
-    .member-row { display: contents; }
-    .member-badge { font-weight:700; font-size:12px; color:#111827; background:#e5e7eb; border-radius:999px; padding:4px 8px; align-self:center; }
-    .member-name, .member-birth { display:grid; gap:6px; }
+    /* Состав команды: на десктопе 2 в ряд (ФИО + ДР), на мобиле столбиком */
+    .members-grid{display:grid; grid-template-columns:1fr 220px; gap:12px 16px; align-items:end}
+    .member-row{display:contents}
+    .member-name,.member-birth{display:grid; gap:6px}
 
-    @media (max-width: 700px){
-      .members-grid{ grid-template-columns: 1fr; }
-      .member-badge{ display:none; }
-      .grid{ grid-template-columns: 1fr; }
-      .chips{ grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+    @media (max-width:700px){
+      .members-grid{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      .chips{grid-template-columns:repeat(auto-fit, minmax(90px,1fr))}
     }
 
-    .actions { display:flex; gap:12px; align-items:center; margin-top: 14px; flex-wrap:wrap; }
-    button { appearance: none; border: none; border-radius: 12px; padding: 12px 16px; font-weight: 700; background: var(--accent); color: var(--accent-contrast); cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,.25); }
-    button[disabled] { opacity:.65; cursor: not-allowed; }
-    button[data-loading="1"]{ position:relative; }
-    button[data-loading="1"]::after{ content:""; width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,.6); border-top-color:transparent; display:inline-block; margin-left:8px; vertical-align: -3px; animation:spin .9s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg);} }
+    .actions{display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap}
+    button{appearance:none; border:none; border-radius:12px; padding:12px 16px; font-weight:700; background:var(--accent); color:var(--accent-contrast); cursor:pointer; box-shadow:0 4px 14px rgba(37,99,235,.25)}
+    button[disabled]{opacity:.65; cursor:not-allowed}
+    button[data-loading="1"]{position:relative}
+    button[data-loading="1"]::after{content:""; width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,.6); border-top-color:transparent; display:inline-block; margin-left:8px; vertical-align:-3px; animation:spin .9s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; background: #111827; color: #fff; padding: 10px 14px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.2); display:none; z-index:9999; }
-    .error { background: #b91c1c; }
-    .ok { background: #065f46; }
-    .req { color:#ef4444; margin-left:4px; }
+    .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:24px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.2); display:none; z-index:9999}
+    .error{background:#b91c1c}
+    .ok{background:#065f46}
+    .req{color:#ef4444; margin-left:4px}
   </style>
 </head>
 <body>
@@ -137,24 +135,24 @@
           </div>
         </div>
 
-        <!-- 10–15. Состав команды -->
+        <!-- 10–15. Состав команды (ручной ввод даты ДД.ММ.ГГГГ) -->
         <fieldset>
           <legend>10–15. Состав команды <span class="req">*</span></legend>
           <div class="members-grid">
             <div class="member-row">
               <div class="member-name"><label>10. ФИО участника 1</label><input type="text" name="member1_name" required /></div>
-              <div class="member-birth"><label>11. Дата рождения участника 1</label><input type="date" name="member1_birth" required /></div>
+              <div class="member-birth"><label>11. Дата рождения участника 1</label><input type="text" class="date-ru" name="member1_birth" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" autocomplete="bday" required /></div>
             </div>
             <div class="member-row">
               <div class="member-name"><label>12. ФИО участника 2</label><input type="text" name="member2_name" required /></div>
-              <div class="member-birth"><label>13. Дата рождения участника 2</label><input type="date" name="member2_birth" required /></div>
+              <div class="member-birth"><label>13. Дата рождения участника 2</label><input type="text" class="date-ru" name="member2_birth" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" autocomplete="bday" required /></div>
             </div>
             <div class="member-row">
               <div class="member-name"><label>14. ФИО участника 3</label><input type="text" name="member3_name" required /></div>
-              <div class="member-birth"><label>15. Дата рождения участника 3</label><input type="date" name="member3_birth" required /></div>
+              <div class="member-birth"><label>15. Дата рождения участника 3</label><input type="text" class="date-ru" name="member3_birth" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" autocomplete="bday" required /></div>
             </div>
           </div>
-          <div class="muted"></div>
+          <div class="muted">Можно печатать дату напрямую: формат <b>ДД.ММ.ГГГГ</b>. Мы проверим корректность и преобразуем автоматически.</div>
         </fieldset>
 
         <div class="actions">
@@ -167,23 +165,19 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- Supabase JS (браузер) -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
     // === ВСТАВЬТЕ СВОИ ЗНАЧЕНИЯ ===
 const SUPABASE_URL = "https://wjoldaptaecqfworfkzk.supabase.co"; // твой Project URL
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqb2xkYXB0YWVjcWZ3b3Jma3prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNzQ0OTEsImV4cCI6MjA3Nzk1MDQ5MX0.-sQLLELT8xq_xYX1INTZE_Q2bzoxEOEoPwcSotIKryE";                // TODO (public anon)
 
-
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     const TIMES = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
-
     const form = document.getElementById('booking-form');
     const submitBtn = document.getElementById('submitBtn');
     const toast = document.getElementById('toast');
 
-    function showToast(msg, ok=false) {
+    function showToast(msg, ok=false){
       toast.textContent = msg;
       toast.className = 'toast ' + (ok ? 'ok' : 'error');
       toast.style.display = 'block';
@@ -191,13 +185,41 @@ const SUPABASE_URL = "https://wjoldaptaecqfworfkzk.supabase.co"; // твой Pro
       showToast._t = setTimeout(()=> toast.style.display = 'none', 3500);
     }
 
-    function getSelectedDate() {
+    // --- Маска и парсинг ДД.ММ.ГГГГ ---
+    function maskDateInput(el){
+      let v = (el.value||'').replace(/\\D/g,'').slice(0,8);
+      if (v.length >= 5) v = v.slice(0,2)+'.'+v.slice(2,4)+'.'+v.slice(4);
+      else if (v.length >= 3) v = v.slice(0,2)+'.'+v.slice(2);
+      el.value = v;
+    }
+    function parseRusDate(s){
+      const m = /^(\\d{2})\\.(\\d{2})\\.(\\d{4})$/.exec(s||'');
+      if (!m) return null;
+      const d = parseInt(m[1],10), mo = parseInt(m[2],10), y = parseInt(m[3],10);
+      const dt = new Date(y, mo-1, d);
+      if (dt.getFullYear()!==y || (dt.getMonth()+1)!==mo || dt.getDate()!==d) return null;
+      return dt;
+    }
+    function toISODate(dt){
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,'0');
+      const d = String(dt.getDate()).padStart(2,'0');
+      return y+'-'+m+'-'+d;
+    }
+    document.querySelectorAll('input.date-ru').forEach(el=>{
+      el.addEventListener('input', ()=> maskDateInput(el), {passive:true});
+      el.addEventListener('blur', ()=>{
+        const ok = !!parseRusDate(el.value);
+        el.setCustomValidity(ok ? '' : 'Введите дату в формате ДД.ММ.ГГГГ');
+      });
+    });
+
+    function getSelectedDate(){
       const el = document.querySelector('input[name="event_date"]:checked');
       return el ? el.value : null;
     }
-
-    function setTimeDisabled(time, disabled) {
-      const input = document.querySelector(`input[name="event_time"][value="${time}"]`);
+    function setTimeDisabled(time, disabled){
+      const input = document.querySelector('input[name="event_time"][value="'+time+'"]');
       if (!input) return;
       input.disabled = !!disabled;
       const lbl = input.closest('label.option');
@@ -205,66 +227,71 @@ const SUPABASE_URL = "https://wjoldaptaecqfworfkzk.supabase.co"; // твой Pro
       if (disabled && input.checked) input.checked = false;
     }
 
-    async function refreshDisabledTimes() {
+    async function refreshDisabledTimes(){
       const date = getSelectedDate();
       if (!date) return;
       TIMES.forEach(t => setTimeDisabled(t, false));
       const { data, error } = await supabase
-        .from('booked_slots')
-        .select('event_time')
-        .eq('event_date', date);
+        .from('booked_slots').select('event_time').eq('event_date', date);
       if (error) { console.error(error); return; }
-      const booked = new Set((data || []).map(r => (r.event_time || '').slice(0,5)));
+      const booked = new Set((data||[]).map(r => (r.event_time||'').slice(0,5)));
       TIMES.forEach(t => { if (booked.has(t)) setTimeDisabled(t, true); });
     }
-
     document.getElementById('dateGroup').addEventListener('change', refreshDisabledTimes, { passive:true });
 
-    // Выбираем первую дату по умолчанию (если ничего не выбрано)
     (function initDefaultDate(){
       const first = document.querySelector('input[name="event_date"]');
-      if (first && !document.querySelector('input[name="event_date"]:checked')) { first.checked = true; }
+      if (first && !document.querySelector('input[name="event_date"]:checked')) first.checked = true;
       refreshDisabledTimes();
     })();
 
-    // Отправка формы с защитой от гонки: уникальный (event_date,event_time) на БД
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      if (!form.reportValidity()) return; // нативная подсветка браузера
+      if (!form.reportValidity()) return;
       submitBtn.disabled = true; submitBtn.dataset.loading = '1';
+
+      // Преобразуем даты рождения в ISO
+      const b1 = parseRusDate(form.member1_birth.value);
+      const b2 = parseRusDate(form.member2_birth.value);
+      const b3 = parseRusDate(form.member3_birth.value);
+      if (!b1 || !b2 || !b3){
+        showToast('Проверьте даты рождения (ДД.ММ.ГГГГ).', false);
+        submitBtn.disabled = false; submitBtn.dataset.loading = '0';
+        return;
+      }
 
       const fd = new FormData(form);
       const payload = {
         event_date: fd.get('event_date'),
         event_time: fd.get('event_time'),
         age_category: fd.get('age_category'),
-        org: fd.get('org')?.trim(),
-        leader_name: fd.get('leader_name')?.trim(),
-        position: fd.get('position')?.trim(),
-        phone: fd.get('phone')?.trim(),
-        email: fd.get('email')?.trim(),
-        team_name: fd.get('team_name')?.trim(),
-        member1_name: fd.get('member1_name')?.trim(),
-        member1_birth: fd.get('member1_birth'),
-        member2_name: fd.get('member2_name')?.trim(),
-        member2_birth: fd.get('member2_birth'),
-        member3_name: fd.get('member3_name')?.trim(),
-        member3_birth: fd.get('member3_birth'),
+        org: (fd.get('org')||'').trim(),
+        leader_name: (fd.get('leader_name')||'').trim(),
+        position: (fd.get('position')||'').trim(),
+        phone: (fd.get('phone')||'').trim(),
+        email: (fd.get('email')||'').trim(),
+        team_name: (fd.get('team_name')||'').trim(),
+        member1_name: (fd.get('member1_name')||'').trim(),
+        member1_birth: toISODate(b1),
+        member2_name: (fd.get('member2_name')||'').trim(),
+        member2_birth: toISODate(b2),
+        member3_name: (fd.get('member3_name')||'').trim(),
+        member3_birth: toISODate(b3),
       };
 
-      // Health-check: быстрый пинг (на Free проект может быть в paused)
+      // Health-check: проект не «усыплён»
       const { error: pingErr } = await supabase
         .from('booked_slots')
         .select('event_time', { count: 'exact', head: true });
-      if (pingErr) {
-        showToast('Сервис временно недоступен. Повторите попытку позже.', false);
+      if (pingErr){
+        showToast('Сервис временно недоступен. Повторите позже.', false);
         submitBtn.disabled = false; submitBtn.dataset.loading = '0';
         return;
       }
 
       const { error } = await supabase.from('bookings').insert(payload);
-      if (error) {
-        if (error.code === '23505') {
+      if (error){
+        if (error.code === '23505'){
           showToast('Этот слот уже занят. Выберите другое время.', false);
           await refreshDisabledTimes();
         } else {
@@ -275,7 +302,7 @@ const SUPABASE_URL = "https://wjoldaptaecqfworfkzk.supabase.co"; // твой Pro
         return;
       }
 
-      showToast('Заявка принята! Мы свяжемся с вами по e‑mail.', true);
+      showToast('Заявка принята! Мы свяжемся с вами по e-mail.', true);
       form.reset();
       refreshDisabledTimes();
       submitBtn.disabled = false; submitBtn.dataset.loading = '0';
@@ -283,4 +310,3 @@ const SUPABASE_URL = "https://wjoldaptaecqfworfkzk.supabase.co"; // твой Pro
   </script>
 </body>
 </html>
-
