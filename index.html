@@ -1,231 +1,253 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ru">
 <head>
-  <title>Облако слов</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Регистрация — бронирование слотов</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start; /* Перемещаем содержимое вверх */
-      overflow: auto;
-      position: relative;
-    }
-    .container {
-      text-align: center;
-      width: 100%;
-      max-width: 1000px;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    h2 {
-      color: #333;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 1s ease-in-out;
-    }
-    .form-link {
-      margin-bottom: 20px;
-    }
-    .form-link a {
-      color: #1a73e8;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 1.2em;
-      transition: color 0.3s ease;
-    }
-    .form-link a:hover {
-      color: #0d47a1;
-      text-decoration: underline;
-    }
-    #wordcloud {
-      width: 100%;
-      height: 70vh; /* Увеличиваем высоту */
-      max-height: 700px; /* Увеличиваем максимальную высоту */
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      background: rgba(255, 255, 255, 0.9);
-      opacity: 1;
-      transition: opacity 1s ease; /* Плавное изменение при обновлении */
-    }
-    canvas {
-      transition: opacity 1s ease;
-    }
-    /* QR-код в левом нижнем углу */
-    .qr-code {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 150px; /* Увеличиваем размер */
-      height: 150px;
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
-    }
-    .qr-code:hover {
-      transform: scale(1.1);
-    }
-    /* Анимация для заголовка */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
+    body { margin: 0; background: #f6f7f9; color: #111; }
+    .wrap { max-width: 920px; margin: 24px auto 80px; padding: 0 16px; }
+    h1 { font-size: 22px; margin: 8px 0 16px; }
+    .card { background: #fff; border-radius: 14px; box-shadow: 0 6px 24px rgba(15,23,42,.06); padding: 20px; }
+    fieldset { border: none; padding: 0; margin: 0 0 16px; }
+    legend { font-weight: 600; margin: 0 0 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 12px 16px; }
+    label.option { display: inline-flex; align-items: center; gap: 8px; margin: 6px 12px 6px 0; padding: 8px 10px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fafafa; cursor: pointer; user-select: none; }
+    label.option input { transform: translateY(1px); }
+    label.option.disabled { opacity: .45; filter: grayscale(100%); cursor: not-allowed; }
+    .row { display: grid; gap: 8px; }
+    .row label { font-size: 13px; color: #374151; }
+    input[type="text"], input[type="tel"], input[type="email"], input[type="date"] { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; }
+    .muted { color: #6b7280; font-size: 13px; }
+    .actions { display:flex; gap:12px; align-items:center; margin-top: 10px; }
+    button { appearance: none; border: none; border-radius: 12px; padding: 10px 16px; font-weight: 600; background: #111827; color: #fff; cursor: pointer; }
+    button[disabled] { opacity:.6; cursor: not-allowed; }
+    .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; background: #111827; color: #fff; padding: 10px 14px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.2); display:none; }
+    .error { background: #b91c1c; }
+    .ok { background: #065f46; }
+    .req { color:#ef4444; margin-left:4px; }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <div class="form-link">
-      <h2>Облако слов</h2>
-      <p>Перейдите по <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform" target="_blank">этой ссылке</a>, чтобы добавить слово в облако.</p>
+  <div class="wrap">
+    <h1>Регистрация на мероприятие</h1>
+    <div class="card">
+      <form id="booking-form">
+        <!-- 1. Дата участия -->
+        <fieldset>
+          <legend>1. Дата участия <span class="req">*</span></legend>
+          <div id="dateGroup">
+            <label class="option"><input type="radio" name="event_date" value="2025-11-19" required> 19 ноября</label>
+            <label class="option"><input type="radio" name="event_date" value="2025-11-20"> 20 ноября</label>
+            <label class="option"><input type="radio" name="event_date" value="2025-11-21"> 21 ноября</label>
+          </div>
+          <div class="muted">Выберите только одну дату.</div>
+        </fieldset>
+
+        <!-- 2. Время проведения -->
+        <fieldset>
+          <legend>2. Время проведения <span class="req">*</span></legend>
+          <div id="timeGroup">
+            <!-- Радио-опции; будут отключаться/сереть, если заняты -->
+            <label class="option"><input type="radio" name="event_time" value="09:00" required> 09:00</label>
+            <label class="option"><input type="radio" name="event_time" value="10:00"> 10:00</label>
+            <label class="option"><input type="radio" name="event_time" value="11:00"> 11:00</label>
+            <label class="option"><input type="radio" name="event_time" value="12:00"> 12:00</label>
+            <label class="option"><input type="radio" name="event_time" value="13:00"> 13:00</label>
+            <label class="option"><input type="radio" name="event_time" value="14:00"> 14:00</label>
+            <label class="option"><input type="radio" name="event_time" value="15:00"> 15:00</label>
+            <label class="option"><input type="radio" name="event_time" value="16:00"> 16:00</label>
+            <label class="option"><input type="radio" name="event_time" value="17:00"> 17:00</label>
+          </div>
+          <div class="muted">Слоты, занятые другими участниками, будут недоступны (серым).</div>
+        </fieldset>
+
+        <!-- 3. Возрастная категория -->
+        <fieldset>
+          <legend>3. Возрастная категория <span class="req">*</span></legend>
+          <label class="option"><input type="radio" name="age_category" value="10-12" required> Младшая (10–12 лет)</label>
+          <label class="option"><input type="radio" name="age_category" value="13-15"> Средняя (13–15 лет)</label>
+          <label class="option"><input type="radio" name="age_category" value="16-18"> Старшая (16–18 лет)</label>
+        </fieldset>
+
+        <!-- 4–15. Остальные поля -->
+        <div class="grid">
+          <div class="row">
+            <label>4. Образовательная организация <span class="req">*</span></label>
+            <input type="text" name="org" required />
+          </div>
+          <div class="row">
+            <label>5. ФИО руководителя <span class="req">*</span></label>
+            <input type="text" name="leader_name" required />
+          </div>
+          <div class="row">
+            <label>6. Должность <span class="req">*</span></label>
+            <input type="text" name="position" required />
+          </div>
+          <div class="row">
+            <label>7. Контактный номер телефона <span class="req">*</span></label>
+            <input type="tel" name="phone" required />
+          </div>
+          <div class="row">
+            <label>8. Адрес электронной почты <span class="req">*</span></label>
+            <input type="email" name="email" required />
+          </div>
+          <div class="row">
+            <label>9. Название команды <span class="req">*</span></label>
+            <input type="text" name="team_name" required />
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>10–15. Состав команды <span class="req">*</span></legend>
+          <div class="grid">
+            <div class="row"><label>10. ФИО участника 1</label><input type="text" name="member1_name" required /></div>
+            <div class="row"><label>11. Дата рождения участника 1</label><input type="date" name="member1_birth" required /></div>
+            <div class="row"><label>12. ФИО участника 2</label><input type="text" name="member2_name" required /></div>
+            <div class="row"><label>13. Дата рождения участника 2</label><input type="date" name="member2_birth" required /></div>
+            <div class="row"><label>14. ФИО участника 3</label><input type="text" name="member3_name" required /></div>
+            <div class="row"><label>15. Дата рождения участника 3</label><input type="date" name="member3_birth" required /></div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button id="submitBtn" type="submit">Отправить заявку</button>
+          <span id="hint" class="muted">Все поля обязательны. При гонке за слот система сообщит, если время уже занято.</span>
+        </div>
+      </form>
     </div>
-    <div id="wordcloud"></div>
-  </div>
-  <div class="qr-code">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform" alt="QR Code" />
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <div id="toast" class="toast"></div>
+
+  <!-- Supabase JS (браузер) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    // Функция для получения данных из CSV
-    async function fetchWords() {
-      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
+    // === НАСТРОЙКИ: вставьте свои значения ===
+    const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"; // TODO
+    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";                // TODO (public anon)
 
-      try {
-        const response = await fetch(csvUrl);
-        if (!response.ok) {
-          throw new Error('Не удалось загрузить CSV: ' + response.statusText);
-        }
-        const text = await response.text();
-        // Разделяем строки и убираем заголовок (первая строка)
-        const words = text.split('\n').slice(1).map(row => {
-          const columns = row.split(',');
-          return columns[1] ? columns[1].trim() : ''; // Берем второй столбец (индекс 1), убираем пробелы
-        }).filter(word => word); // Убираем пустые строки
-        if (words.length === 0) {
-          console.warn('Нет слов в таблице');
-          return;
-        }
-        generateWordCloud(words);
-      } catch (error) {
-        console.error('Ошибка при загрузке данных:', error);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const DATES = [
+      { value: '2025-11-19', label: '19 ноября' },
+      { value: '2025-11-20', label: '20 ноября' },
+      { value: '2025-11-21', label: '21 ноября' },
+    ];
+    const TIMES = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+
+    const form = document.getElementById('booking-form');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+
+    function showToast(msg, ok=false) {
+      toast.textContent = msg;
+      toast.className = 'toast ' + (ok ? 'ok' : 'error');
+      toast.style.display = 'block';
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> toast.style.display = 'none', 3500);
+    }
+
+    function getSelectedDate() {
+      const el = document.querySelector('input[name="event_date"]:checked');
+      return el ? el.value : null;
+    }
+
+    function setTimeDisabled(time, disabled) {
+      const input = document.querySelector(`input[name="event_time"][value="${time}"]`);
+      if (!input) return;
+      input.disabled = !!disabled;
+      const lbl = input.closest('label.option');
+      if (lbl) lbl.classList.toggle('disabled', !!disabled);
+      if (disabled && input.checked) input.checked = false;
+    }
+
+    async function refreshDisabledTimes() {
+      const date = getSelectedDate();
+      if (!date) return;
+      // Сначала включаем все
+      TIMES.forEach(t => setTimeDisabled(t, false));
+      // Запросим занятые слоты только по выбранной дате
+      const { data, error } = await supabase
+        .from('booked_slots')
+        .select('event_time')
+        .eq('event_date', date);
+      if (error) { console.error(error); return; }
+      const booked = new Set((data || []).map(r => (r.event_time || '').slice(0,5)));
+      TIMES.forEach(t => { if (booked.has(t)) setTimeDisabled(t, true); });
+    }
+
+    // Смена даты => перегрузка занятых слотов
+    document.getElementById('dateGroup').addEventListener('change', refreshDisabledTimes);
+
+    // Выбираем первую дату по умолчанию
+    (function initDefaultDate(){
+      const first = document.querySelector('input[name="event_date"]');
+      if (first && !first.checked) { first.checked = true; }
+      refreshDisabledTimes();
+    })();
+
+    // Отправка формы с защитой от гонки: уникальный (event_date,event_time) на БД
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+
+      const fd = new FormData(form);
+      const payload = {
+        event_date: fd.get('event_date'),
+        event_time: fd.get('event_time'),
+        age_category: fd.get('age_category'),
+        org: fd.get('org')?.trim(),
+        leader_name: fd.get('leader_name')?.trim(),
+        position: fd.get('position')?.trim(),
+        phone: fd.get('phone')?.trim(),
+        email: fd.get('email')?.trim(),
+        team_name: fd.get('team_name')?.trim(),
+        member1_name: fd.get('member1_name')?.trim(),
+        member1_birth: fd.get('member1_birth'),
+        member2_name: fd.get('member2_name')?.trim(),
+        member2_birth: fd.get('member2_birth'),
+        member3_name: fd.get('member3_name')?.trim(),
+        member3_birth: fd.get('member3_birth'),
+      };
+
+      // Быстрая фронт-валидация
+      if (!payload.event_date || !payload.event_time) {
+        showToast('Выберите дату и время');
+        submitBtn.disabled = false;
+        return;
       }
-    }
 
-    // Функция для генерации случайного цвета
-    function getRandomColor() {
-      const colors = ['#FFD700', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1', '#B565A7'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
+      // Health-check: быстро проверим доступность API/БД (на Free проекты могут быть в "paused")
+      const { error: pingErr } = await supabase
+        .from('booked_slots')
+        .select('event_time', { count: 'exact', head: true });
+      if (pingErr) {
+        showToast('Сервис временно недоступен. Повторите попытку позже.', false);
+        submitBtn.disabled = false;
+        return;
+      }
 
-    // Функция для генерации облака слов
-    function generateWordCloud(words) {
-      const wordCounts = words.reduce((acc, word) => {
-        acc[word] = (acc[word] || 0) + 1;
-        return acc;
-      }, {});
-
-      const wordArray = Object.entries(wordCounts).map(([word, count]) => [word, count]);
-
-      const wordcloudElement = document.getElementById('wordcloud');
-
-      // Плавное затухание перед обновлением
-      anime({
-        targets: wordcloudElement,
-        opacity: 0,
-        duration: 500,
-        easing: 'easeOutQuad',
-        complete: () => {
-          wordcloudElement.innerHTML = ''; // Очищаем содержимое
-
-          // Генерируем новое облако слов
-          WordCloud(wordcloudElement, {
-            list: wordArray,
-            gridSize: 10,
-            weightFactor: 30,
-            fontFamily: 'Poppins, sans-serif',
-            color: function () {
-              return getRandomColor();
-            },
-            rotateRatio: 0.7,
-            rotationSteps: 3,
-            backgroundColor: 'transparent',
-            drawOutOfBound: false,
-            shrinkToFit: true,
-            shuffle: false,
-            hover: function (item, dimension, event) {
-              if (dimension) {
-                event.target.style.cursor = 'pointer';
-                anime({
-                  targets: event.target,
-                  scale: 1.2,
-                  duration: 300,
-                  easing: 'easeOutQuad'
-                });
-              }
-            },
-            mouseout: function (item, dimension, event) {
-              if (dimension) {
-                anime({
-                  targets: event.target,
-                  scale: 1,
-                  duration: 300,
-                  easing: 'easeOutQuad'
-                });
-              }
-            },
-            click: function (item, dimension, event) {
-              if (item) {
-                anime({
-                  targets: event.target,
-                  scale: [1, 1.5, 1],
-                  rotate: [0, 360],
-                  duration: 1000,
-                  easing: 'easeInOutQuad'
-                });
-              }
-            }
-          });
-
-          // Плавное появление нового облака
-          anime({
-            targets: wordcloudElement,
-            opacity: 1,
-            duration: 500,
-            easing: 'easeInQuad'
-          });
-
-          // Анимация появления слов
-          const spans = wordcloudElement.querySelectorAll('span');
-          spans.forEach((span, index) => {
-            anime({
-              targets: span,
-              translateY: [50, 0],
-              opacity: [0, 1],
-              delay: index * 50,
-              duration: 800,
-              easing: 'easeOutExpo'
-            });
-          });
+      const { error } = await supabase.from('bookings').insert(payload);
+      if (error) {
+        // 23505 — дубликат по уникальному ограничению (слот уже занят)
+        if (error.code === '23505') {
+          showToast('Этот слот уже занят. Выберите другое время.', false);
+          await refreshDisabledTimes();
+        } else {
+          console.error(error);
+          showToast('Ошибка отправки: ' + (error.message || 'попробуйте позже.'), false);
         }
-      });
-    }
+        submitBtn.disabled = false;
+        return;
+      }
 
-    // Загружаем данные при загрузке страницы
-    fetchWords();
-
-    // Обновляем данные каждые 10 секунд
-    setInterval(fetchWords, 10000);
+      showToast('Заявка принята! Мы свяжемся с вами по e‑mail.', true);
+      form.reset();
+      refreshDisabledTimes();
+      submitBtn.disabled = false;
+    });
   </script>
 </body>
 </html>
