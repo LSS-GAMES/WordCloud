@@ -1,37 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+  <meta charset="UTF-8">
   <title>Облако слов</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #f5f7ff 0, #e3e7ff 35%, #dde5f0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 960px;
+      width: 100%;
+      padding: 24px 16px 40px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      padding: 20px 20px 24px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
     #wordcloud {
       width: 100%;
-      height: 500px;
-      border: 1px solid #ccc;
+      height: 480px;
+      position: relative;
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+      background: radial-gradient(circle at top left, #f9fafb 0, #e5e7eb 100%);
+      overflow: hidden;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+    }
+
+    .status.error .dot {
+      background: #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
     }
   </style>
 </head>
 <body>
-  <div id="wordcloud"></div>
+  <div class="container">
+    <div class="card">
+      <h1>Облако слов</h1>
+      <p class="subtitle">
+        Слова берутся из столбца <strong>B</strong> Google-таблицы.
+        Чем чаще слово встречается, тем крупнее оно отображается.
+      </p>
+
+      <div id="wordcloud"></div>
+
+      <div id="status" class="status">
+        <span class="dot"></span>
+        <span>Обновление каждые 10 секунд…</span>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
-    // Функция для получения данных из CSV
-    async function fetchWords() {
-     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
 
+    let isFetching = false;
+
+    async function fetchWords() {
+      if (isFetching) return;
+      isFetching = true;
+
+      const statusEl = document.getElementById('status');
+      if (statusEl) {
+        statusEl.classList.remove('error');
+        statusEl.querySelector('span:last-child').textContent = 'Обновление данных...';
+      }
 
       try {
-        const response = await fetch(csvUrl);
+        // cacheBust, чтобы не было кэширования
+        const response = await fetch(csvUrl + '&cacheBust=' + Date.now());
         const text = await response.text();
-        const words = text.split('\n').map(row => row.split(',')[0]).filter(word => word); // Берем первый столбец, убираем пустые строки
+
+        const lines = text.trim().split('\n');
+        // Пропускаем первую строку (заголовок), если она есть
+        const dataLines = lines.length > 1 ? lines.slice(1) : lines;
+
+        const words = dataLines
+          .map(line => {
+            const cols = line.split(',');
+            if (cols.length < 2) return null;
+
+            // Берём столбец B (индекс 1)
+            let word = cols[1].trim();
+
+            // Убираем кавычки по краям, если есть
+            if (word.startsWith('"') && word.endsWith('"')) {
+              word = word.slice(1, -1);
+            }
+
+            return word || null;
+          })
+          .filter(Boolean);
+
         generateWordCloud(words);
+
+        if (statusEl) {
+          statusEl.classList.remove('error');
+          statusEl.querySelector('span:last-child').textContent =
+            'Последнее обновление: ' + new Date().toLocaleTimeString();
+        }
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
+        if (statusEl) {
+          statusEl.classList.add('error');
+          statusEl.querySelector('span:last-child').textContent =
+            'Ошибка загрузки данных. Проверьте ссылку на таблицу или доступ.';
+        }
+      } finally {
+        isFetching = false;
       }
     }
 
-    // Функция для генерации облака слов
     function generateWordCloud(words) {
+      if (!words || !words.length) {
+        console.warn('Нет слов для отображения');
+        return;
+      }
+
       const wordCounts = words.reduce((acc, word) => {
         acc[word] = (acc[word] || 0) + 1;
         return acc;
@@ -41,22 +174,33 @@
 
       WordCloud(document.getElementById('wordcloud'), {
         list: wordArray,
-        gridSize: 8,
-        weightFactor: 20,
-        fontFamily: 'Arial, sans-serif',
-        color: 'random-dark',
-        rotateRatio: 0.5, // Вероятность поворота слов
-        rotationSteps: 2, // Возможные углы поворота (0 или 90 градусов)
-        backgroundColor: '#fff'
+        gridSize: Math.round(16 * window.innerWidth / 1024),
+        weightFactor: function (size) {
+          // Чем чаще слово, тем оно крупнее
+          return 8 + size * 6;
+        },
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        color: function () {
+          const palette = ['#1d4ed8', '#0f766e', '#9333ea', '#be123c', '#ea580c'];
+          return palette[Math.floor(Math.random() * palette.length)];
+        },
+        rotateRatio: 0.15,       // Меньше перевёрнутых слов
+        rotationSteps: 4,        // 0, 90, 180, 270
+        backgroundColor: 'rgba(255,255,255,0)',
+        shrinkToFit: true,
+        drawOutOfBound: false
       });
     }
 
-    // Загружаем данные при загрузке страницы
+    // Первичный запуск
     fetchWords();
-
-    // Обновляем данные каждые 10 секунд
+    // Автообновление каждые 10 секунд
     setInterval(fetchWords, 10000);
+
+    // При изменении размера окна пересобираем облако
+    window.addEventListener('resize', () => {
+      fetchWords();
+    });
   </script>
 </body>
 </html>
-
