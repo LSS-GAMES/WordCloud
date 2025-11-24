@@ -12,13 +12,13 @@
       margin: 0;
       padding: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #f5f7ff 0, #e3e7ff 35%, #dde5f0 100%);
+      background: radial-gradient(circle at top, #eef2ff 0, #e0f2fe 35%, #e5e7eb 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
-      color: #111827;
+      color: #0f172a;
     }
 
     .container {
@@ -28,17 +28,23 @@
     }
 
     .card {
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      position: relative;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 18px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.26);
       padding: 20px 20px 24px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      backdrop-filter: blur(12px);
     }
 
     h1 {
       margin: 0 0 4px;
-      font-size: 24px;
-      letter-spacing: 0.03em;
+      font-size: 26px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #111827;
+      margin-right: 230px; /* чтобы не заезжало под QR */
     }
 
     .subtitle {
@@ -51,14 +57,15 @@
       width: 100%;
       height: 480px;
       position: relative;
-      border-radius: 12px;
-      border: 1px dashed #cbd5e1;
-      background: radial-gradient(circle at top left, #f9fafb 0, #e5e7eb 100%);
+      border-radius: 14px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      background:
+        radial-gradient(circle at 10% 0%, #f9fafb 0, #e5e7eb 40%, #e0f2fe 100%);
       overflow: hidden;
     }
 
     .status {
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 12px;
       color: #9ca3af;
       display: flex;
@@ -71,22 +78,130 @@
       height: 8px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
     }
 
     .status.error .dot {
       background: #ef4444;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18);
+    }
+
+    /* QR-панель */
+
+    .qr-panel {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      z-index: 5;
+    }
+
+    .qr-item {
+      background: rgba(15, 23, 42, 0.94);
+      border-radius: 14px;
+      padding: 8px 8px 10px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 110px;
+    }
+
+    .qr-item a {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .qr-item img {
+      display: block;
+      width: 96px;
+      height: 96px;
+      border-radius: 9px;
+      background: #ffffff;
+    }
+
+    .qr-item span {
+      margin-top: 6px;
+      font-size: 11px;
+      text-align: center;
+      color: #e5e7eb;
+      max-width: 120px;
+      line-height: 1.3;
+    }
+
+    /* Тултип по словам */
+
+    .wc-tooltip {
+      position: fixed;
+      z-index: 50;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      color: #f9fafb;
+      font-size: 12px;
+      pointer-events: none;
+      white-space: nowrap;
+      transform: translate(-50%, -120%);
+      opacity: 0;
+      transition: opacity 0.12s ease-out;
+    }
+
+    .wc-tooltip.visible {
+      opacity: 1;
+    }
+
+    /* Адаптивность */
+
+    @media (max-width: 640px) {
+      .card {
+        padding-top: 18px;
+      }
+
+      h1 {
+        margin-right: 0;
+        font-size: 22px;
+      }
+
+      .qr-panel {
+        position: static;
+        margin: 4px 0 10px;
+        justify-content: flex-start;
+      }
+
+      #wordcloud {
+        height: 380px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
+      <div class="qr-panel">
+        <div class="qr-item">
+          <a href="https://lss-games.github.io/WordCloud/" target="_blank" rel="noopener noreferrer">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Flss-games.github.io%2FWordCloud%2F"
+              alt="QR: открыть облако слов">
+          </a>
+          <span>Открыть облако на своём устройстве</span>
+        </div>
+        <div class="qr-item">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=header"
+             target="_blank" rel="noopener noreferrer">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
+              alt="QR: перейти к форме">
+          </a>
+          <span>Ответить на форму (3 слова)</span>
+        </div>
+      </div>
+
       <h1>Облако слов</h1>
       <p class="subtitle">
-        Слова берутся из столбца <strong>B</strong> Google-таблицы.
-        Чем чаще слово встречается, тем крупнее оно отображается.
+        Живое облако слов по ответам участников. Обновляется каждые 10&nbsp;секунд.
       </p>
 
       <div id="wordcloud"></div>
@@ -98,49 +213,86 @@
     </div>
   </div>
 
+  <div id="wc-tooltip" class="wc-tooltip"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
+    // CSV из Google Sheets
+    const csvUrl =
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
 
     let isFetching = false;
+    let lastEntries = [];
+    let lastMaxCount = 1;
+
+    const statusEl = document.getElementById('status');
+    const tooltipEl = document.getElementById('wc-tooltip');
+
+    // Простейший разбор одной CSV-строки с учётом кавычек
+    function parseCsvLine(line) {
+      const result = [];
+      let cur = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+
+        if (ch === '"') {
+          // двойные кавычки внутри значения
+          if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+            cur += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === ',' && !inQuotes) {
+          result.push(cur);
+          cur = '';
+        } else {
+          cur += ch;
+        }
+      }
+
+      result.push(cur);
+      return result;
+    }
+
+    function cleanField(value) {
+      if (!value) return '';
+      let word = value.trim();
+
+      // убираем внешние кавычки
+      if (word.startsWith('"') && word.endsWith('"')) {
+        word = word.slice(1, -1);
+      }
+
+      // удаляем типовые кавычки
+      word = word.replace(/[«»„“”"']/g, '');
+
+      return word.trim();
+    }
 
     async function fetchWords() {
       if (isFetching) return;
       isFetching = true;
 
-      const statusEl = document.getElementById('status');
       if (statusEl) {
         statusEl.classList.remove('error');
         statusEl.querySelector('span:last-child').textContent = 'Обновление данных...';
       }
 
       try {
-        // cacheBust, чтобы не было кэширования
         const response = await fetch(csvUrl + '&cacheBust=' + Date.now());
         const text = await response.text();
 
         const lines = text.trim().split('\n');
-        // Пропускаем первую строку (заголовок), если она есть
-        const dataLines = lines.length > 1 ? lines.slice(1) : lines;
+        const dataLines = lines.length > 1 ? lines.slice(1) : lines; // пропускаем заголовок
 
-        const words = dataLines
-          .map(line => {
-            const cols = line.split(',');
-            if (cols.length < 2) return null;
+        const rows = dataLines
+          .map(line => parseCsvLine(line))
+          .filter(cols => cols.length > 1);
 
-            // Берём столбец B (индекс 1)
-            let word = cols[1].trim();
-
-            // Убираем кавычки по краям, если есть
-            if (word.startsWith('"') && word.endsWith('"')) {
-              word = word.slice(1, -1);
-            }
-
-            return word || null;
-          })
-          .filter(Boolean);
-
-        generateWordCloud(words);
+        generateWordCloud(rows);
 
         if (statusEl) {
           statusEl.classList.remove('error');
@@ -152,54 +304,132 @@
         if (statusEl) {
           statusEl.classList.add('error');
           statusEl.querySelector('span:last-child').textContent =
-            'Ошибка загрузки данных. Проверьте ссылку на таблицу или доступ.';
+            'Ошибка загрузки данных. Проверьте доступ к таблице.';
         }
       } finally {
         isFetching = false;
       }
     }
 
-    function generateWordCloud(words) {
-      if (!words || !words.length) {
-        console.warn('Нет слов для отображения');
+    // Теперь берём 3 слова из строки (B, C, D)
+    function generateWordCloud(rows) {
+      if (!rows || !rows.length) {
+        console.warn('Нет строк с данными');
         return;
       }
 
-      const wordCounts = words.reduce((acc, word) => {
-        acc[word] = (acc[word] || 0) + 1;
-        return acc;
-      }, {});
+      const counts = {};
+      const display = {};
 
-      const wordArray = Object.entries(wordCounts).map(([word, count]) => [word, count]);
+      rows.forEach(cols => {
+        // индексы 1, 2, 3 -> столбцы B, C, D
+        [1, 2, 3].forEach(idx => {
+          if (idx >= cols.length) return;
 
-      WordCloud(document.getElementById('wordcloud'), {
-        list: wordArray,
-        gridSize: Math.round(16 * window.innerWidth / 1024),
+          const field = cleanField(cols[idx]);
+          if (!field) return;
+
+          // На случай, если кто-то впишет несколько слов в одно поле — режем по пробелам/знакам
+          const pieces = field.split(/[,\s/|]+/).filter(Boolean);
+
+          pieces.forEach(piece => {
+            let normalized = piece
+              .toLowerCase()
+              .replace(/[.,!?;:()]/g, '')
+              .trim();
+
+            if (!normalized) return;
+
+            if (!counts[normalized]) {
+              counts[normalized] = 0;
+              display[normalized] = piece.trim();
+            }
+            counts[normalized]++;
+          });
+        });
+      });
+
+      const entries = Object.keys(counts).map(key => ({
+        word: display[key],
+        count: counts[key]
+      }));
+
+      if (!entries.length) {
+        console.warn('Не получилось собрать слова');
+        return;
+      }
+
+      // сортируем по частоте (чисто для контроля, в рендере всё равно список)
+      entries.sort((a, b) => b.count - a.count || a.word.localeCompare(b.word, 'ru'));
+
+      lastEntries = entries;
+      lastMaxCount = entries[0].count || 1;
+
+      renderWordCloud();
+    }
+
+    function renderWordCloud() {
+      const el = document.getElementById('wordcloud');
+      if (!el || !lastEntries.length) return;
+
+      const list = lastEntries.map(e => [e.word, e.count]);
+      const maxCount = lastMaxCount || 1;
+
+      WordCloud(el, {
+        list,
+        gridSize: Math.max(8, Math.round(12 * window.innerWidth / 1024)),
         weightFactor: function (size) {
-          // Чем чаще слово, тем оно крупнее
-          return 8 + size * 6;
+          // Нормируем размер: от min до max относительно максимальной частоты
+          const min = 12;
+          const max = 56;
+          return min + (size / maxCount) * (max - min);
         },
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         color: function () {
-          const palette = ['#1d4ed8', '#0f766e', '#9333ea', '#be123c', '#ea580c'];
+          const palette = [
+            '#1d4ed8', // синий
+            '#0f766e', // бирюзовый
+            '#7c3aed', // фиолетовый
+            '#be123c', // малиновый
+            '#ea580c', // оранжевый
+            '#16a34a'  // зелёный
+          ];
           return palette[Math.floor(Math.random() * palette.length)];
         },
-        rotateRatio: 0.15,       // Меньше перевёрнутых слов
-        rotationSteps: 4,        // 0, 90, 180, 270
+        rotateRatio: 0.08,      // немного повёрнутых слов
+        rotationSteps: 4,
         backgroundColor: 'rgba(255,255,255,0)',
+        shuffle: true,
+        drawOutOfBound: false,
         shrinkToFit: true,
-        drawOutOfBound: false
+        hover: function (item, dimension, event) {
+          if (!tooltipEl) return;
+
+          if (!item) {
+            tooltipEl.classList.remove('visible');
+            return;
+          }
+
+          const word = item[0];
+          const count = item[1];
+
+          tooltipEl.textContent = word + ' — ' + count + ' раз(а)';
+          tooltipEl.style.left = event.clientX + 'px';
+          tooltipEl.style.top = event.clientY + 'px';
+          tooltipEl.classList.add('visible');
+        }
       });
     }
 
     // Первичный запуск
     fetchWords();
+
     // Автообновление каждые 10 секунд
     setInterval(fetchWords, 10000);
 
-    // При изменении размера окна пересобираем облако
+    // При ресайзе перерисовываем облако с уже загруженными данными
     window.addEventListener('resize', () => {
-      fetchWords();
+      renderWordCloud();
     });
   </script>
 </body>
