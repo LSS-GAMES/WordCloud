@@ -8,69 +8,86 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+    }
+
+    body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #eef2ff 0, #e0f2fe 35%, #e5e7eb 100%);
+      background: radial-gradient(circle at top, #e0f2fe 0, #e5e7eb 45%, #dbeafe 100%);
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
+      align-items: stretch;
+      justify-content: center;
       color: #0f172a;
     }
 
-    .container {
-      max-width: 960px;
+    /* Основной трёхколоночный макет: слева QR, центр – облако, справа QR */
+
+    .root {
       width: 100%;
-      padding: 24px 16px 40px;
+      max-width: 1440px;
+      height: 100vh;
+      padding: 24px 32px;
+      display: flex;
+      gap: 24px;
     }
 
-    .card {
-      position: relative;
-      background: rgba(255, 255, 255, 0.96);
-      border-radius: 18px;
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.26);
-      padding: 20px 20px 24px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
+    .main {
+      flex: 1;
+      min-width: 0;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 24px;
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.55);
       backdrop-filter: blur(12px);
+      padding: 18px 22px 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 0 4px 8px;
     }
 
     h1 {
       margin: 0 0 4px;
-      font-size: 26px;
-      letter-spacing: 0.04em;
+      font-size: 28px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       font-weight: 700;
       color: #111827;
-      margin-right: 230px; /* чтобы не заезжало под QR */
     }
 
     .subtitle {
-      margin: 0 0 16px;
+      margin: 0;
       font-size: 14px;
       color: #6b7280;
     }
 
+    /* Облако занимает всю оставшуюся высоту */
+
     #wordcloud {
-      width: 100%;
-      height: 480px;
-      position: relative;
-      border-radius: 14px;
-      border: 1px dashed rgba(148, 163, 184, 0.6);
+      flex: 1;
+      min-height: 0;
+      margin-top: 10px;
+      border-radius: 18px;
+      border: 1px dashed rgba(148, 163, 184, 0.7);
       background:
-        radial-gradient(circle at 10% 0%, #f9fafb 0, #e5e7eb 40%, #e0f2fe 100%);
+        radial-gradient(circle at 8% 0%, #f9fafb 0, #e5e7eb 35%, #e0f2fe 100%);
       overflow: hidden;
+      position: relative;
     }
 
     .status {
-      margin-top: 10px;
+      margin-top: 6px;
       font-size: 12px;
       color: #9ca3af;
       display: flex;
       align-items: center;
       gap: 6px;
+      padding: 0 4px 2px;
     }
 
     .dot {
@@ -78,51 +95,56 @@
       height: 8px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
     }
 
     .status.error .dot {
       background: #ef4444;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
     }
 
-    /* QR-панель */
+    /* Боковые панели с QR */
 
-    .qr-panel {
-      position: absolute;
-      top: 18px;
-      right: 18px;
+    .qr-side {
+      width: 140px;
       display: flex;
-      gap: 10px;
-      align-items: flex-end;
-      z-index: 5;
+      align-items: center;
+      justify-content: center;
     }
 
-    .qr-item {
-      background: rgba(15, 23, 42, 0.94);
-      border-radius: 14px;
-      padding: 8px 8px 10px;
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
+    .qr-card {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 18px;
+      padding: 10px 10px 12px;
+      box-shadow: 0 18px 38px rgba(15, 23, 42, 0.9);
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-width: 110px;
+      cursor: pointer;
+      transform-origin: center;
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
     }
 
-    .qr-item a {
+    .qr-card:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 1);
+    }
+
+    .qr-card a {
       text-decoration: none;
+      color: inherit;
       display: inline-block;
     }
 
-    .qr-item img {
+    .qr-card img {
       display: block;
-      width: 96px;
-      height: 96px;
-      border-radius: 9px;
+      width: 108px;
+      height: 108px;
+      border-radius: 12px;
       background: #ffffff;
     }
 
-    .qr-item span {
+    .qr-title {
       margin-top: 6px;
       font-size: 11px;
       text-align: center;
@@ -131,14 +153,14 @@
       line-height: 1.3;
     }
 
-    /* Тултип по словам */
+    /* Тултип для слов */
 
     .wc-tooltip {
       position: fixed;
       z-index: 50;
       padding: 6px 8px;
       border-radius: 8px;
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 23, 42, 0.96);
       color: #f9fafb;
       font-size: 12px;
       pointer-events: none;
@@ -152,72 +174,150 @@
       opacity: 1;
     }
 
-    /* Адаптивность */
+    /* Модальное окно для увеличенного QR */
 
-    @media (max-width: 640px) {
-      .card {
-        padding-top: 18px;
+    .qr-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .qr-modal.active {
+      display: flex;
+    }
+
+    .qr-modal-inner {
+      text-align: center;
+    }
+
+    .qr-modal-img {
+      max-width: 80vmin;
+      max-height: 80vmin;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.95);
+    }
+
+    .qr-modal-caption {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #e5e7eb;
+    }
+
+    .qr-modal-hint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    /* Адаптивность под мобильные / маленький проектор */
+
+    @media (max-width: 900px) {
+      .root {
+        padding: 12px 10px;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .qr-side {
+        width: 100%;
+        order: -1;
+      }
+
+      .qr-side.right {
+        order: 1;
+      }
+
+      .qr-side-inner-row {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .main {
+        height: calc(100vh - 220px);
+        border-radius: 18px;
+        padding: 12px 12px 8px;
       }
 
       h1 {
-        margin-right: 0;
         font-size: 22px;
       }
 
-      .qr-panel {
-        position: static;
-        margin: 4px 0 10px;
-        justify-content: flex-start;
-      }
-
       #wordcloud {
-        height: 380px;
+        border-radius: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="qr-panel">
-        <div class="qr-item">
-          <a href="https://lss-games.github.io/WordCloud/" target="_blank" rel="noopener noreferrer">
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Flss-games.github.io%2FWordCloud%2F"
-              alt="QR: открыть облако слов">
-          </a>
-          <span>Открыть облако на своём устройстве</span>
-        </div>
-        <div class="qr-item">
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=header"
-             target="_blank" rel="noopener noreferrer">
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
-              alt="QR: перейти к форме">
-          </a>
-          <span>Ответить на форму (3 слова)</span>
-        </div>
+  <div class="root">
+    <!-- Левая боковая панель: ссылка на само облако -->
+    <div class="qr-side left">
+      <div class="qr-card"
+           data-title="Открыть облако на своём устройстве"
+           data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=340x340&data=https%3A%2F%2Flss-games.github.io%2FWordCloud%2F">
+        <a href="https://lss-games.github.io/WordCloud/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https%3A%2F%2Flss-games.github.io%2FWordCloud%2F"
+            alt="QR: открыть облако слов">
+        </a>
+        <div class="qr-title">Открыть облако слов на телефоне</div>
       </div>
+    </div>
 
-      <h1>Облако слов</h1>
-      <p class="subtitle">
-        Живое облако слов по ответам участников. Обновляется каждые 10&nbsp;секунд.
-      </p>
+    <!-- Центральная часть: заголовок + облако на весь экран -->
+    <main class="main">
+      <header class="header">
+        <h1>Облако слов</h1>
+        <p class="subtitle">
+          Живое облако по ответам участников. Обновляется каждые 10&nbsp;секунд.
+        </p>
+      </header>
 
-      <div id="wordcloud"></div>
+      <section id="wordcloud"></section>
 
       <div id="status" class="status">
         <span class="dot"></span>
         <span>Обновление каждые 10 секунд…</span>
       </div>
+    </main>
+
+    <!-- Правая боковая панель: форма с тремя словами -->
+    <div class="qr-side right">
+      <div class="qr-card"
+           data-title="Ответить на форму (3 слова)"
+           data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=340x340&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=header"
+           target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
+            alt="QR: перейти к форме">
+        </a>
+        <div class="qr-title">Перейти к форме и написать 3 слова</div>
+      </div>
     </div>
   </div>
 
+  <!-- Тултип для подсказки по словам -->
   <div id="wc-tooltip" class="wc-tooltip"></div>
+
+  <!-- Модальное окно для увеличенного QR -->
+  <div id="qr-modal" class="qr-modal">
+    <div class="qr-modal-inner">
+      <img id="qr-modal-img" class="qr-modal-img" src="" alt="">
+      <div id="qr-modal-caption" class="qr-modal-caption"></div>
+      <div class="qr-modal-hint">Нажмите в любом месте, чтобы закрыть</div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
-    // CSV из Google Sheets
+    // ====== НАСТРОЙКИ И ССЫЛКИ ======
     const csvUrl =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
 
@@ -228,7 +328,35 @@
     const statusEl = document.getElementById('status');
     const tooltipEl = document.getElementById('wc-tooltip');
 
-    // Простейший разбор одной CSV-строки с учётом кавычек
+    const qrModal = document.getElementById('qr-modal');
+    const qrModalImg = document.getElementById('qr-modal-img');
+    const qrModalCaption = document.getElementById('qr-modal-caption');
+
+    // ====== УВЕЛИЧЕНИЕ QR КОДА ======
+    function initQrZoom() {
+      document.querySelectorAll('.qr-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          // не мешаем обычному переходу по ссылке, если человек целенаправленно кликает по ней
+          // логика: если клик прямо по <a>, просто открываем ссылку
+          if (e.target.tagName.toLowerCase() === 'a') return;
+
+          const largeSrc = card.getAttribute('data-large-src');
+          const title = card.getAttribute('data-title') || '';
+
+          if (!largeSrc) return;
+
+          qrModalImg.src = largeSrc;
+          qrModalCaption.textContent = title;
+          qrModal.classList.add('active');
+        });
+      });
+
+      qrModal.addEventListener('click', () => {
+        qrModal.classList.remove('active');
+      });
+    }
+
+    // ====== РАЗБОР CSV (с поддержкой кавычек) ======
     function parseCsvLine(line) {
       const result = [];
       let cur = '';
@@ -238,8 +366,8 @@
         const ch = line[i];
 
         if (ch === '"') {
-          // двойные кавычки внутри значения
           if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+            // экранированные двойные кавычки
             cur += '"';
             i++;
           } else {
@@ -252,7 +380,6 @@
           cur += ch;
         }
       }
-
       result.push(cur);
       return result;
     }
@@ -261,17 +388,18 @@
       if (!value) return '';
       let word = value.trim();
 
-      // убираем внешние кавычки
+      // внешние кавычки
       if (word.startsWith('"') && word.endsWith('"')) {
         word = word.slice(1, -1);
       }
 
-      // удаляем типовые кавычки
+      // типовые кавычки
       word = word.replace(/[«»„“”"']/g, '');
 
       return word.trim();
     }
 
+    // ====== ЗАГРУЗКА И ПОДГОТОВКА ДАННЫХ ======
     async function fetchWords() {
       if (isFetching) return;
       isFetching = true;
@@ -311,7 +439,7 @@
       }
     }
 
-    // Теперь берём 3 слова из строки (B, C, D)
+    // Берём до трёх слов из строки: столбцы B, C, D
     function generateWordCloud(rows) {
       if (!rows || !rows.length) {
         console.warn('Нет строк с данными');
@@ -322,14 +450,14 @@
       const display = {};
 
       rows.forEach(cols => {
-        // индексы 1, 2, 3 -> столбцы B, C, D
+        // индексы 1, 2, 3 → B, C, D
         [1, 2, 3].forEach(idx => {
           if (idx >= cols.length) return;
 
           const field = cleanField(cols[idx]);
           if (!field) return;
 
-          // На случай, если кто-то впишет несколько слов в одно поле — режем по пробелам/знакам
+          // если в поле несколько слов через пробел/запятую/слэш/|
           const pieces = field.split(/[,\s/|]+/).filter(Boolean);
 
           pieces.forEach(piece => {
@@ -359,7 +487,7 @@
         return;
       }
 
-      // сортируем по частоте (чисто для контроля, в рендере всё равно список)
+      // сортируем по частоте – полезно, если когда-нибудь захочется выводить легенду
       entries.sort((a, b) => b.count - a.count || a.word.localeCompare(b.word, 'ru'));
 
       lastEntries = entries;
@@ -368,6 +496,7 @@
       renderWordCloud();
     }
 
+    // ====== РЕНДЕР ОБЛАКА ======
     function renderWordCloud() {
       const el = document.getElementById('wordcloud');
       if (!el || !lastEntries.length) return;
@@ -377,17 +506,17 @@
 
       WordCloud(el, {
         list,
-        gridSize: Math.max(8, Math.round(12 * window.innerWidth / 1024)),
+        gridSize: Math.max(8, Math.round(14 * window.innerWidth / 1024)),
         weightFactor: function (size) {
           // Нормируем размер: от min до max относительно максимальной частоты
-          const min = 12;
-          const max = 56;
+          const min = 14;
+          const max = 64;
           return min + (size / maxCount) * (max - min);
         },
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         color: function () {
           const palette = [
-            '#1d4ed8', // синий
+            '#1d4ed8', // насыщенный синий
             '#0f766e', // бирюзовый
             '#7c3aed', // фиолетовый
             '#be123c', // малиновый
@@ -396,8 +525,8 @@
           ];
           return palette[Math.floor(Math.random() * palette.length)];
         },
-        rotateRatio: 0.08,      // немного повёрнутых слов
-        rotationSteps: 4,
+        rotateRatio: 0.06,      // немного повёрнутых слов
+        rotationSteps: 4,       // 0, 90, 180, 270
         backgroundColor: 'rgba(255,255,255,0)',
         shuffle: true,
         drawOutOfBound: false,
@@ -421,13 +550,12 @@
       });
     }
 
-    // Первичный запуск
+    // ====== ИНИЦИАЛИЗАЦИЯ ======
+    initQrZoom();
     fetchWords();
-
-    // Автообновление каждые 10 секунд
     setInterval(fetchWords, 10000);
 
-    // При ресайзе перерисовываем облако с уже загруженными данными
+    // При ресайзе пересобираем облако с уже загруженными данными
     window.addEventListener('resize', () => {
       renderWordCloud();
     });
