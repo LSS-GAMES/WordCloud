@@ -12,82 +12,41 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      overflow: hidden; /* чтобы не было полос прокрутки */
     }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #e0f2fe 0, #e5e7eb 45%, #dbeafe 100%);
-      display: flex;
-      align-items: center;      /* центрируем по вертикали */
-      justify-content: center;  /* и по горизонтали */
       color: #0f172a;
-    }
-
-    /* Ряд: слева карточка, справа QR.
-       Высоту по экрану НЕ фиксируем, только ширину и отступы. */
-    .root {
-      width: 100%;
-      max-width: 1440px;
-      padding: 24px 32px;
-      display: flex;
-      gap: 32px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .main {
-      flex: 0 1 960px; /* похоже на первый вариант */
-      min-width: 0;
-      background: rgba(255, 255, 255, 0.97);
-      border-radius: 24px;
-      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      backdrop-filter: blur(12px);
-      padding: 18px 22px 12px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      padding: 0 4px 8px;
-    }
-
-    h1 {
-      margin: 0 0 4px;
-      font-size: 28px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: 14px;
-      color: #6b7280;
-    }
-
-    /* Фиксированная высота облака, чтобы вся карточка была «как на макете» */
-    #wordcloud {
-      width: 100%;
-      height: 480px;
-      margin-top: 10px;
-      border-radius: 18px;
-      border: 1px dashed rgba(148, 163, 184, 0.7);
-      background:
-        radial-gradient(circle at 8% 0%, #f9fafb 0, #e5e7eb 35%, #e0f2fe 100%);
-      overflow: hidden;
       position: relative;
     }
 
+    /* Облако на весь экран, без рамок и карточек */
+
+    #wordcloud {
+      position: absolute;
+      inset: 0;     /* top:0; right:0; bottom:0; left:0 */
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Статус обновления — аккуратно внизу слева */
+
     .status {
-      margin-top: 6px;
+      position: fixed;
+      left: 14px;
+      bottom: 10px;
       font-size: 12px;
       color: #9ca3af;
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 0 4px 2px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(8px);
     }
 
     .dot {
@@ -95,27 +54,27 @@
       height: 8px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
     }
 
     .status.error .dot {
       background: #ef4444;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
     }
 
-    /* Правая узкая колонка с одним QR */
-
-    .qr-side {
-      width: 230px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .status span:last-child {
+      color: #e5e7eb;
     }
+
+    /* QR внизу справа */
 
     .qr-card {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
       background: rgba(15, 23, 42, 0.96);
       border-radius: 20px;
-      padding: 12px 14px 16px;
+      padding: 10px 12px 14px;
       box-shadow: 0 18px 38px rgba(15, 23, 42, 0.9);
       display: flex;
       flex-direction: column;
@@ -123,17 +82,12 @@
       cursor: pointer;
       transform-origin: center;
       transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+      z-index: 20;
     }
 
     .qr-card:hover {
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 24px 45px rgba(15, 23, 42, 1);
-    }
-
-    .qr-card a {
-      text-decoration: none;
-      color: inherit;
-      display: inline-block;
     }
 
     .qr-card img {
@@ -145,7 +99,7 @@
     }
 
     .qr-title {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 13px;
       text-align: center;
       color: #e5e7eb;
@@ -174,7 +128,7 @@
       opacity: 1;
     }
 
-    /* Модальное окно с увеличенным QR */
+    /* Модалка для большого QR */
 
     .qr-modal {
       position: fixed;
@@ -214,84 +168,49 @@
       color: #9ca3af;
     }
 
-    /* Адаптив под маленькие экраны */
-
-    @media (max-width: 900px) {
-      body {
-        align-items: flex-start;
-      }
-
-      .root {
-        padding: 12px 10px;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .main {
-        flex: 0 1 auto;
-        border-radius: 18px;
-        padding: 12px 12px 8px;
-      }
-
-      h1 {
-        font-size: 22px;
-      }
-
-      #wordcloud {
-        height: 360px;
-        border-radius: 14px;
-      }
-
-      .qr-side {
-        width: 100%;
+    @media (max-width: 640px) {
+      .qr-card {
+        right: 12px;
+        bottom: 12px;
       }
 
       .qr-card img {
-        width: 140px;
-        height: 140px;
+        width: 130px;
+        height: 130px;
+      }
+
+      .status {
+        left: 10px;
+        bottom: 8px;
+        font-size: 11px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="root">
-    <!-- Слева: заголовок + облако слов -->
-    <main class="main">
-      <header class="header">
-        <h1>Облако слов</h1>
-        <p class="subtitle">
-          Живое облако по ответам участников. Обновляется каждые 10&nbsp;секунд.
-        </p>
-      </header>
+  <!-- Облако на весь экран -->
+  <section id="wordcloud"></section>
 
-      <section id="wordcloud"></section>
-
-      <div id="status" class="status">
-        <span class="dot"></span>
-        <span>Обновление каждые 10 секунд…</span>
-      </div>
-    </main>
-
-    <!-- Справа: один QR к форме -->
-    <aside class="qr-side">
-      <div class="qr-card"
-           data-title="Перейти к форме и написать 3 слова"
-           data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=header"
-           target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
-            alt="QR: перейти к форме">
-        </a>
-        <div class="qr-title">Перейти к форме и написать 3 слова</div>
-      </div>
-    </aside>
+  <!-- Статус обновления -->
+  <div id="status" class="status">
+    <span class="dot"></span>
+    <span>Обновление данных…</span>
   </div>
 
-  <!-- Тултип для подсказки по словам -->
+  <!-- Один QR к форме, только для сканирования + зум по клику -->
+  <div class="qr-card"
+       data-title="Перейти к форме и написать 3 слова"
+       data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader">
+    <img
+      src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
+      alt="QR: перейти к форме">
+    <div class="qr-title">Перейти к форме и написать 3 слова</div>
+  </div>
+
+  <!-- Тултип для слов -->
   <div id="wc-tooltip" class="wc-tooltip"></div>
 
-  <!-- Модальное окно для увеличенного QR -->
+  <!-- Модальное окно большого QR -->
   <div id="qr-modal" class="qr-modal">
     <div class="qr-modal-inner">
       <img id="qr-modal-img" class="qr-modal-img" src="" alt="">
@@ -316,21 +235,19 @@
     const qrModalImg = document.getElementById('qr-modal-img');
     const qrModalCaption = document.getElementById('qr-modal-caption');
 
-    // Зум QR по клику
+    // Зум QR по клику (без перехода по ссылке)
     function initQrZoom() {
-      document.querySelectorAll('.qr-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-          if (e.target.tagName.toLowerCase() === 'a') return;
+      const card = document.querySelector('.qr-card');
+      if (!card) return;
 
-          const largeSrc = card.getAttribute('data-large-src');
-          const title = card.getAttribute('data-title') || '';
+      card.addEventListener('click', () => {
+        const largeSrc = card.getAttribute('data-large-src');
+        const title = card.getAttribute('data-title') || '';
+        if (!largeSrc) return;
 
-          if (!largeSrc) return;
-
-          qrModalImg.src = largeSrc;
-          qrModalCaption.textContent = title;
-          qrModal.classList.add('active');
-        });
+        qrModalImg.src = largeSrc;
+        qrModalCaption.textContent = title;
+        qrModal.classList.add('active');
       });
 
       qrModal.addEventListener('click', () => {
@@ -338,7 +255,7 @@
       });
     }
 
-    // CSV с поддержкой кавычек
+    // CSV парсер с кавычками
     function parseCsvLine(line) {
       const result = [];
       let cur = '';
@@ -384,7 +301,7 @@
 
       if (statusEl) {
         statusEl.classList.remove('error');
-        statusEl.querySelector('span:last-child').textContent = 'Обновление данных...';
+        statusEl.querySelector('span:last-child').textContent = 'Обновление данных…';
       }
 
       try {
@@ -471,6 +388,7 @@
       renderWordCloud();
     }
 
+    // Облако на весь экран
     function renderWordCloud() {
       const el = document.getElementById('wordcloud');
       if (!el || !lastEntries.length) return;
@@ -478,12 +396,14 @@
       const list = lastEntries.map(e => [e.word, e.count]);
       const maxCount = lastMaxCount || 1;
 
+      console.log('Уникальных слов в облаке:', list.length);
+
       WordCloud(el, {
         list,
-        gridSize: Math.max(8, Math.round(14 * window.innerWidth / 1024)),
+        gridSize: 8, // компактнее — больше слов влезает
         weightFactor: function (size) {
-          const min = 14;
-          const max = 64;
+          const min = 10;
+          const max = 42;
           return min + (size / maxCount) * (max - min);
         },
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -504,6 +424,7 @@
         shuffle: true,
         drawOutOfBound: false,
         shrinkToFit: true,
+        clearCanvas: true,
         hover: function (item, dimension, event) {
           if (!tooltipEl) return;
 
