@@ -12,7 +12,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* чтобы не было полос прокрутки */
+      overflow: hidden;
     }
 
     body {
@@ -22,18 +22,16 @@
       position: relative;
     }
 
-    /* Облако на весь экран, без рамок и карточек */
-
+    /* Контейнер для канваса со словами на весь экран */
     #wordcloud {
       position: absolute;
-      inset: 0;     /* top:0; right:0; bottom:0; left:0 */
+      inset: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
     }
 
-    /* Статус обновления — аккуратно внизу слева */
-
+    /* Статус обновления — маленький чип внизу слева */
     .status {
       position: fixed;
       left: 14px;
@@ -47,6 +45,7 @@
       border-radius: 999px;
       background: rgba(15, 23, 42, 0.5);
       backdrop-filter: blur(8px);
+      z-index: 30;
     }
 
     .dot {
@@ -67,7 +66,6 @@
     }
 
     /* QR внизу справа */
-
     .qr-card {
       position: fixed;
       right: 24px;
@@ -107,8 +105,7 @@
       line-height: 1.3;
     }
 
-    /* Тултип для слов */
-
+    /* Тултип по словам */
     .wc-tooltip {
       position: fixed;
       z-index: 50;
@@ -128,8 +125,7 @@
       opacity: 1;
     }
 
-    /* Модалка для большого QR */
-
+    /* Модалка большого QR */
     .qr-modal {
       position: fixed;
       inset: 0;
@@ -188,16 +184,16 @@
   </style>
 </head>
 <body>
-  <!-- Облако на весь экран -->
-  <section id="wordcloud"></section>
+  <!-- Контейнер для канваса со словами -->
+  <div id="wordcloud"></div>
 
-  <!-- Статус обновления -->
+  <!-- Статус -->
   <div id="status" class="status">
     <span class="dot"></span>
     <span>Обновление данных…</span>
   </div>
 
-  <!-- Один QR к форме, только для сканирования + зум по клику -->
+  <!-- Один QR снизу справа, только зум по клику -->
   <div class="qr-card"
        data-title="Перейти к форме и написать 3 слова"
        data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=480x480&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader">
@@ -207,7 +203,7 @@
     <div class="qr-title">Перейти к форме и написать 3 слова</div>
   </div>
 
-  <!-- Тултип для слов -->
+  <!-- Тултип -->
   <div id="wc-tooltip" class="wc-tooltip"></div>
 
   <!-- Модальное окно большого QR -->
@@ -219,7 +215,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
     const csvUrl =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
@@ -227,6 +222,7 @@
     let isFetching = false;
     let lastEntries = [];
     let lastMaxCount = 1;
+    let drawnWords = []; // сюда запишем, что и куда нарисовали
 
     const statusEl = document.getElementById('status');
     const tooltipEl = document.getElementById('wc-tooltip');
@@ -235,7 +231,7 @@
     const qrModalImg = document.getElementById('qr-modal-img');
     const qrModalCaption = document.getElementById('qr-modal-caption');
 
-    // Зум QR по клику (без перехода по ссылке)
+    // ====== ЗУМ QR ПО КЛИКУ ======
     function initQrZoom() {
       const card = document.querySelector('.qr-card');
       if (!card) return;
@@ -255,7 +251,7 @@
       });
     }
 
-    // CSV парсер с кавычками
+    // ====== CSV ПАРСЕР ======
     function parseCsvLine(line) {
       const result = [];
       let cur = '';
@@ -295,6 +291,7 @@
       return word.trim();
     }
 
+    // ====== ЗАГРУЗКА CSV ======
     async function fetchWords() {
       if (isFetching) return;
       isFetching = true;
@@ -315,7 +312,7 @@
           .map(line => parseCsvLine(line))
           .filter(cols => cols.length > 1);
 
-        generateWordCloud(rows);
+        generateWordList(rows);
 
         if (statusEl) {
           statusEl.classList.remove('error');
@@ -334,8 +331,8 @@
       }
     }
 
-    // Берём до трёх слов: B, C, D
-    function generateWordCloud(rows) {
+    // Собираем частоты слов из столбцов B, C, D
+    function generateWordList(rows) {
       if (!rows || !rows.length) {
         console.warn('Нет строк с данными');
         return;
@@ -388,63 +385,128 @@
       renderWordCloud();
     }
 
-    // Облако на весь экран
+    // ====== РИСУЕМ ВСЕ СЛОВА (МОГУТ ПЕРЕКРЫВАТЬСЯ) ======
     function renderWordCloud() {
-      const el = document.getElementById('wordcloud');
-      if (!el || !lastEntries.length) return;
+      const container = document.getElementById('wordcloud');
+      if (!container || !lastEntries.length) return;
 
-      const list = lastEntries.map(e => [e.word, e.count]);
+      let canvas = container.querySelector('canvas');
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        container.innerHTML = '';
+        container.appendChild(canvas);
+      }
+
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
       const maxCount = lastMaxCount || 1;
+      const minSize = 16;
+      const maxSize = 64;
+      const margin = 20;
 
-      console.log('Уникальных слов в облаке:', list.length);
+      const palette = [
+        '#1d4ed8',
+        '#0f766e',
+        '#7c3aed',
+        '#be123c',
+        '#ea580c',
+        '#16a34a'
+      ];
 
-      WordCloud(el, {
-        list,
-        gridSize: 8, // компактнее — больше слов влезает
-        weightFactor: function (size) {
-          const min = 10;
-          const max = 42;
-          return min + (size / maxCount) * (max - min);
-        },
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-        color: function () {
-          const palette = [
-            '#1d4ed8',
-            '#0f766e',
-            '#7c3aed',
-            '#be123c',
-            '#ea580c',
-            '#16a34a'
-          ];
-          return palette[Math.floor(Math.random() * palette.length)];
-        },
-        rotateRatio: 0.06,
-        rotationSteps: 4,
-        backgroundColor: 'rgba(255,255,255,0)',
-        shuffle: true,
-        drawOutOfBound: false,
-        shrinkToFit: true,
-        clearCanvas: true,
-        hover: function (item, dimension, event) {
-          if (!tooltipEl) return;
+      drawnWords = [];
 
-          if (!item) {
-            tooltipEl.classList.remove('visible');
-            return;
+      // маленькие сначала, крупные в конце — крупные «поверх»
+      const entries = lastEntries.slice().sort((a, b) => a.count - b.count);
+
+      entries.forEach(entry => {
+        const size = minSize + (entry.count / maxCount) * (maxSize - minSize);
+        const text = entry.word;
+
+        ctx.font = `${size}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textBaseline = 'alphabetic';
+
+        const metrics = ctx.measureText(text);
+        const textWidth = metrics.width;
+        const textHeight = size;
+
+        const maxX = Math.max(margin, rect.width - textWidth - margin);
+        const maxY = Math.max(margin + textHeight, rect.height - margin);
+
+        const x = margin + Math.random() * (maxX - margin);
+        const y = margin + textHeight + Math.random() * (maxY - (margin + textHeight));
+
+        ctx.fillStyle = palette[Math.floor(Math.random() * palette.length)];
+        ctx.fillText(text, x, y);
+
+        drawnWords.push({
+          word: text,
+          count: entry.count,
+          x,
+          y,
+          width: textWidth,
+          height: textHeight
+        });
+      });
+
+      console.log('Нарисовано слов:', drawnWords.length);
+    }
+
+    // ====== ХОВЕР ПО СЛОВАМ (примерно, по прямоугольнику) ======
+    function initWordHover() {
+      const container = document.getElementById('wordcloud');
+      if (!container) return;
+
+      container.addEventListener('mousemove', (e) => {
+        if (!tooltipEl || !drawnWords.length) return;
+
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        let hit = null;
+        // идём с конца — последние нарисованные считаем «верхними»
+        for (let i = drawnWords.length - 1; i >= 0; i--) {
+          const w = drawnWords[i];
+          if (
+            x >= w.x &&
+            x <= w.x + w.width &&
+            y <= w.y &&
+            y >= w.y - w.height
+          ) {
+            hit = w;
+            break;
           }
-
-          const word = item[0];
-          const count = item[1];
-
-          tooltipEl.textContent = word + ' — ' + count + ' раз(а)';
-          tooltipEl.style.left = event.clientX + 'px';
-          tooltipEl.style.top = event.clientY + 'px';
-          tooltipEl.classList.add('visible');
         }
+
+        if (!hit) {
+          tooltipEl.classList.remove('visible');
+          return;
+        }
+
+        tooltipEl.textContent = `${hit.word} — ${hit.count} раз(а)`;
+        tooltipEl.style.left = e.clientX + 'px';
+        tooltipEl.style.top = e.clientY + 'px';
+        tooltipEl.classList.add('visible');
+      });
+
+      container.addEventListener('mouseleave', () => {
+        if (tooltipEl) tooltipEl.classList.remove('visible');
       });
     }
 
+    // ====== ИНИЦИАЛИЗАЦИЯ ======
     initQrZoom();
+    initWordHover();
     fetchWords();
     setInterval(fetchWords, 10000);
 
