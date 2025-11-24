@@ -23,7 +23,7 @@
       color: #0f172a;
     }
 
-    /* Основной трёхколоночный макет: слева QR, центр – облако, справа QR */
+    /* Два блока на один экран: слева облако, справа QR */
 
     .root {
       width: 100%;
@@ -66,8 +66,6 @@
       color: #6b7280;
     }
 
-    /* Облако занимает всю оставшуюся высоту */
-
     #wordcloud {
       flex: 1;
       min-height: 0;
@@ -103,10 +101,10 @@
       box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
     }
 
-    /* Боковые панели с QR */
+    /* Правая узкая колонка с QR */
 
     .qr-side {
-      width: 140px;
+      width: 220px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -114,8 +112,8 @@
 
     .qr-card {
       background: rgba(15, 23, 42, 0.96);
-      border-radius: 18px;
-      padding: 10px 10px 12px;
+      border-radius: 20px;
+      padding: 12px 14px 16px;
       box-shadow: 0 18px 38px rgba(15, 23, 42, 0.9);
       display: flex;
       flex-direction: column;
@@ -127,7 +125,7 @@
 
     .qr-card:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 1);
+      box-shadow: 0 24px 45px rgba(15, 23, 42, 1);
     }
 
     .qr-card a {
@@ -138,18 +136,18 @@
 
     .qr-card img {
       display: block;
-      width: 108px;
-      height: 108px;
-      border-radius: 12px;
+      width: 150px;
+      height: 150px;
+      border-radius: 14px;
       background: #ffffff;
     }
 
     .qr-title {
-      margin-top: 6px;
-      font-size: 11px;
+      margin-top: 10px;
+      font-size: 13px;
       text-align: center;
       color: #e5e7eb;
-      max-width: 120px;
+      max-width: 180px;
       line-height: 1.3;
     }
 
@@ -174,7 +172,7 @@
       opacity: 1;
     }
 
-    /* Модальное окно для увеличенного QR */
+    /* Модальное окно с увеличенным QR */
 
     .qr-modal {
       position: fixed;
@@ -214,7 +212,7 @@
       color: #9ca3af;
     }
 
-    /* Адаптивность под мобильные / маленький проектор */
+    /* Адаптив для маленьких экранов */
 
     @media (max-width: 900px) {
       .root {
@@ -228,18 +226,8 @@
         order: -1;
       }
 
-      .qr-side.right {
-        order: 1;
-      }
-
-      .qr-side-inner-row {
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-      }
-
       .main {
-        height: calc(100vh - 220px);
+        height: calc(100vh - 230px);
         border-radius: 18px;
         padding: 12px 12px 8px;
       }
@@ -251,26 +239,17 @@
       #wordcloud {
         border-radius: 14px;
       }
+
+      .qr-card img {
+        width: 130px;
+        height: 130px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="root">
-    <!-- Левая боковая панель: ссылка на само облако -->
-    <div class="qr-side left">
-      <div class="qr-card"
-           data-title="Открыть облако на своём устройстве"
-           data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=340x340&data=https%3A%2F%2Flss-games.github.io%2FWordCloud%2F">
-        <a href="https://lss-games.github.io/WordCloud/" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https%3A%2F%2Flss-games.github.io%2FWordCloud%2F"
-            alt="QR: открыть облако слов">
-        </a>
-        <div class="qr-title">Открыть облако слов на телефоне</div>
-      </div>
-    </div>
-
-    <!-- Центральная часть: заголовок + облако на весь экран -->
+    <!-- Левая часть: заголовок + облако слов -->
     <main class="main">
       <header class="header">
         <h1>Облако слов</h1>
@@ -287,20 +266,20 @@
       </div>
     </main>
 
-    <!-- Правая боковая панель: форма с тремя словами -->
-    <div class="qr-side right">
+    <!-- Правая часть: только QR к форме -->
+    <aside class="qr-side">
       <div class="qr-card"
            data-title="Ответить на форму (3 слова)"
-           data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=340x340&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader">
+           data-large-src="https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg/viewform?usp=header"
            target="_blank" rel="noopener noreferrer">
           <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
+            src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSe98Dyuj49voeLLojNRuwoGXSD9bDCEn7R0QhyAwDJMrufkXg%2Fviewform%3Fusp%3Dheader"
             alt="QR: перейти к форме">
         </a>
         <div class="qr-title">Перейти к форме и написать 3 слова</div>
       </div>
-    </div>
+    </aside>
   </div>
 
   <!-- Тултип для подсказки по словам -->
@@ -317,7 +296,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
   <script>
-    // ====== НАСТРОЙКИ И ССЫЛКИ ======
+    // ====== ССЫЛКА НА CSV И СОСТОЯНИЕ ======
     const csvUrl =
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
 
@@ -332,12 +311,11 @@
     const qrModalImg = document.getElementById('qr-modal-img');
     const qrModalCaption = document.getElementById('qr-modal-caption');
 
-    // ====== УВЕЛИЧЕНИЕ QR КОДА ======
+    // ====== ЗУМ QR КОДА ======
     function initQrZoom() {
       document.querySelectorAll('.qr-card').forEach(card => {
         card.addEventListener('click', (e) => {
-          // не мешаем обычному переходу по ссылке, если человек целенаправленно кликает по ней
-          // логика: если клик прямо по <a>, просто открываем ссылку
+          // Если клик прямо по <a> — даём открыть ссылку
           if (e.target.tagName.toLowerCase() === 'a') return;
 
           const largeSrc = card.getAttribute('data-large-src');
@@ -356,7 +334,7 @@
       });
     }
 
-    // ====== РАЗБОР CSV (с поддержкой кавычек) ======
+    // ====== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ CSV ======
     function parseCsvLine(line) {
       const result = [];
       let cur = '';
@@ -367,7 +345,6 @@
 
         if (ch === '"') {
           if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
-            // экранированные двойные кавычки
             cur += '"';
             i++;
           } else {
@@ -388,18 +365,16 @@
       if (!value) return '';
       let word = value.trim();
 
-      // внешние кавычки
       if (word.startsWith('"') && word.endsWith('"')) {
         word = word.slice(1, -1);
       }
 
-      // типовые кавычки
       word = word.replace(/[«»„“”"']/g, '');
 
       return word.trim();
     }
 
-    // ====== ЗАГРУЗКА И ПОДГОТОВКА ДАННЫХ ======
+    // ====== ЗАГРУЗКА ТЕКСТА И ПОСТРОЕНИЕ ЧАСТОТ ======
     async function fetchWords() {
       if (isFetching) return;
       isFetching = true;
@@ -414,7 +389,7 @@
         const text = await response.text();
 
         const lines = text.trim().split('\n');
-        const dataLines = lines.length > 1 ? lines.slice(1) : lines; // пропускаем заголовок
+        const dataLines = lines.length > 1 ? lines.slice(1) : lines;
 
         const rows = dataLines
           .map(line => parseCsvLine(line))
@@ -450,14 +425,12 @@
       const display = {};
 
       rows.forEach(cols => {
-        // индексы 1, 2, 3 → B, C, D
         [1, 2, 3].forEach(idx => {
           if (idx >= cols.length) return;
 
           const field = cleanField(cols[idx]);
           if (!field) return;
 
-          // если в поле несколько слов через пробел/запятую/слэш/|
           const pieces = field.split(/[,\s/|]+/).filter(Boolean);
 
           pieces.forEach(piece => {
@@ -487,7 +460,6 @@
         return;
       }
 
-      // сортируем по частоте – полезно, если когда-нибудь захочется выводить легенду
       entries.sort((a, b) => b.count - a.count || a.word.localeCompare(b.word, 'ru'));
 
       lastEntries = entries;
@@ -508,7 +480,6 @@
         list,
         gridSize: Math.max(8, Math.round(14 * window.innerWidth / 1024)),
         weightFactor: function (size) {
-          // Нормируем размер: от min до max относительно максимальной частоты
           const min = 14;
           const max = 64;
           return min + (size / maxCount) * (max - min);
@@ -516,17 +487,17 @@
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         color: function () {
           const palette = [
-            '#1d4ed8', // насыщенный синий
-            '#0f766e', // бирюзовый
-            '#7c3aed', // фиолетовый
-            '#be123c', // малиновый
-            '#ea580c', // оранжевый
-            '#16a34a'  // зелёный
+            '#1d4ed8',
+            '#0f766e',
+            '#7c3aed',
+            '#be123c',
+            '#ea580c',
+            '#16a34a'
           ];
           return palette[Math.floor(Math.random() * palette.length)];
         },
-        rotateRatio: 0.06,      // немного повёрнутых слов
-        rotationSteps: 4,       // 0, 90, 180, 270
+        rotateRatio: 0.06,
+        rotationSteps: 4,
         backgroundColor: 'rgba(255,255,255,0)',
         shuffle: true,
         drawOutOfBound: false,
@@ -555,7 +526,6 @@
     fetchWords();
     setInterval(fetchWords, 10000);
 
-    // При ресайзе пересобираем облако с уже загруженными данными
     window.addEventListener('resize', () => {
       renderWordCloud();
     });
