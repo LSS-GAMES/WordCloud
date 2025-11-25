@@ -353,7 +353,7 @@
         const field = cleanField(cols[idx]);
         if (!field) return;
 
-        // 👇 ВАРИАНТ 2: одна ячейка = одно "слово/фраза"
+        // одна ячейка = одно "слово/фраза"
         const pieces = [field];
 
         pieces.forEach(piece => {
@@ -396,6 +396,12 @@
       }
     });
 
+    console.log(
+      'Строк в CSV:', rows.length,
+      'Уникальных фраз:', Object.keys(stats).length,
+      'Всего вхождений (occurrences):', occs.length
+    );
+
     // сначала менее частые, крупные сверху
     occs.sort((a, b) => {
       const ca = stats[a.key].count;
@@ -413,7 +419,7 @@
     renderWordCloud();
   }
 
-  // ====== РИСУЕМ КАЖДОЕ ВХОЖДЕНИЕ ======
+  // ====== РИСУЕМ КАЖДОЕ ВХОЖДЕНИЕ (ЦЕНТР + МОЖНО ПЕРЕКРЫВАТЬСЯ) ======
   function renderWordCloud() {
     const container = document.getElementById('wordcloud');
     if (!container || !occurrences.length) return;
@@ -440,7 +446,7 @@
     const maxCount = globalMaxCount || 1;
     const minSize = 16;
     const maxSize = 64;
-    const margin = 20;
+    const margin = 8;
 
     const palette = [
       '#1d4ed8',
@@ -450,6 +456,19 @@
       '#ea580c',
       '#16a34a'
     ];
+
+    // центр экрана
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // даёт значение чаще около 0, реже ±0.5
+    function randCentered() {
+      return (Math.random() + Math.random()) / 2 - 0.5; // [-0.5; 0.5]
+    }
+
+    // радиус "разлёта" от центра
+    const spreadX = rect.width * 0.4;
+    const spreadY = rect.height * 0.4;
 
     drawnWords = [];
 
@@ -467,11 +486,22 @@
       const textWidth = metrics.width;
       const textHeight = size;
 
-      const maxX = Math.max(margin, rect.width - textWidth - margin);
-      const maxY = Math.max(margin + textHeight, rect.height - margin);
+      // генерируем позицию *вокруг центра*
+      let x = centerX + randCentered() * spreadX - textWidth / 2;
+      let y = centerY + randCentered() * spreadY + textHeight / 2;
 
-      const x = margin + Math.random() * (maxX - margin);
-      const y = margin + textHeight + Math.random() * (maxY - (margin + textHeight));
+      // жёстко не выпускаем за экран
+      if (x < margin) x = margin;
+      if (x + textWidth > rect.width - margin) {
+        x = rect.width - margin - textWidth;
+      }
+
+      if (y - textHeight < margin) {
+        y = margin + textHeight;
+      }
+      if (y > rect.height - margin) {
+        y = rect.height - margin;
+      }
 
       ctx.fillStyle = palette[Math.floor(Math.random() * palette.length)];
       ctx.fillText(text, x, y);
@@ -486,7 +516,7 @@
       });
     });
 
-    console.log('Нарисовано фраз (включая все повторы):', drawnWords.length);
+    console.log('Нарисовано фраз (включая повторы):', drawnWords.length);
   }
 
   // ====== ХОВЕР ПО СЛОВАМ ======
@@ -542,9 +572,5 @@
   });
 </script>
 
-
-
 </body>
 </html>
-
-
