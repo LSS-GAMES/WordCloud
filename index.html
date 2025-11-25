@@ -215,19 +215,19 @@
     </div>
   </div>
 
-
-  <script>
+<script>
   const csvUrl =
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0Jo7s9n49D_HbgL9LQvSJ8qxkS0rVq1oV7lmkAyC8eDiUj2WSYcrAmyrB74ZNDscLSFW2mnAWQ-XI/pub?output=csv';
 
   let isFetching = false;
 
-  // 👇 вместо lastEntries/lastMaxCount
-  let occurrences = [];    // список ВСЕХ появлений слов
-  let wordStats = {};      // статистика по уникальным словам { key: { word, count } }
-  let globalMaxCount = 1;  // максимальная частота среди всех слов
+  // список ВСЕХ появлений (каждая ячейка B/C/D = одно появление)
+  let occurrences = [];
+  // статистика по уникальным фразам
+  let wordStats = {};
+  let globalMaxCount = 1;
 
-  let drawnWords = []; // сюда запишем, что и куда нарисовали
+  let drawnWords = [];
 
   const statusEl = document.getElementById('status');
   const tooltipEl = document.getElementById('wc-tooltip');
@@ -336,14 +336,14 @@
     }
   }
 
-  // ====== СОБИРАЕМ ВСЕ ВХОЖДЕНИЯ СЛОВ (B, C, D) ======
+  // ====== СОБИРАЕМ ВСЕ ВХОЖДЕНИЯ СЛОВ/ФРАЗ ИЗ B, C, D ======
   function generateWordList(rows) {
     if (!rows || !rows.length) {
       console.warn('Нет строк с данными');
       return;
     }
 
-    const stats = {};   // уникальные слова
+    const stats = {};   // уникальные фразы
     const occs = [];    // каждое появление
 
     rows.forEach(cols => {
@@ -353,7 +353,8 @@
         const field = cleanField(cols[idx]);
         if (!field) return;
 
-        const pieces = field.split(/[,\s/|]+/).filter(Boolean);
+        // 👇 ВАРИАНТ 2: одна ячейка = одно "слово/фраза"
+        const pieces = [field];
 
         pieces.forEach(piece => {
           let normalized = piece
@@ -370,10 +371,10 @@
             };
           }
 
-          // считаем общее количество
+          // считаем общее количество вхождений этой фразы
           stats[normalized].count++;
 
-          // запоминаем каждое вхождение
+          // сохраняем КАЖДОЕ вхождение
           occs.push({
             key: normalized,
             word: piece.trim()
@@ -395,7 +396,7 @@
       }
     });
 
-    // для красоты — сначала мелкие, потом крупные (крупные сверху)
+    // сначала менее частые, крупные сверху
     occs.sort((a, b) => {
       const ca = stats[a.key].count;
       const cb = stats[b.key].count;
@@ -412,7 +413,7 @@
     renderWordCloud();
   }
 
-  // ====== РИСУЕМ КАЖДОЕ ВХОЖДЕНИЕ СЛОВА ======
+  // ====== РИСУЕМ КАЖДОЕ ВХОЖДЕНИЕ ======
   function renderWordCloud() {
     const container = document.getElementById('wordcloud');
     if (!container || !occurrences.length) return;
@@ -485,10 +486,10 @@
       });
     });
 
-    console.log('Нарисовано слов (включая все повторы):', drawnWords.length);
+    console.log('Нарисовано фраз (включая все повторы):', drawnWords.length);
   }
 
-  // ====== ХОВЕР ПО СЛОВАМ (примерно, по прямоугольнику) ======
+  // ====== ХОВЕР ПО СЛОВАМ ======
   function initWordHover() {
     const container = document.getElementById('wordcloud');
     if (!container) return;
@@ -501,7 +502,6 @@
       const y = e.clientY - rect.top;
 
       let hit = null;
-      // идём с конца — последние нарисованные считаем «верхними»
       for (let i = drawnWords.length - 1; i >= 0; i--) {
         const w = drawnWords[i];
         if (
@@ -542,6 +542,9 @@
   });
 </script>
 
+
+
 </body>
 </html>
+
 
